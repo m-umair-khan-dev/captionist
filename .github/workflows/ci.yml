@@ -17,7 +17,7 @@ jobs:
     name: Build, lint and test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/build
       - name: Upload .deb (download it from the run's summary to test a PR)
         uses: actions/upload-artifact@v4
@@ -30,7 +30,7 @@ jobs:
     name: Dependency security audit
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: rustsec/audit-check@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
