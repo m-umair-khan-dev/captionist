@@ -5,7 +5,7 @@ All notable changes to Captionist are listed here. The format follows
 [Semantic Versioning](https://semver.org/). From 0.1.0 on, entries are
 generated from commit messages by release-please (see [CONTRIBUTING.md](CONTRIBUTING.md)).
 
-## 0.1.0 (unreleased)
+## 0.1.0 (2026-11-11)
 
 First public preview.
 
@@ -21,3 +21,9 @@ First public preview.
 - Caption history with .txt, .srt and .vtt export.
 - Optional hardware acceleration (NVIDIA CUDA, Intel OpenVINO GPU/NPU) that is measured before it's recommended.
 - Profanity filter.
+- Opt-in crash reports (off unless turned on) and "Report a problem" with a reviewable diagnostics summary.
+- Signed APT repository: installing the .deb once enables automatic updates.
+
+### Security
+
+- Updated `zip` to 9.x, resolving four advisories in the archive reader used for acceleration packs.
