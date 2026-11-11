@@ -1,18 +1,25 @@
 version: 2
+# PR titles have no prefix (house style: only bug fixes use "fix:"); a merged
+# dependency update ships with the next release.
 updates:
   - package-ecosystem: cargo
     directory: /
     schedule:
       interval: weekly
-    commit-message:
-      prefix: "chore(deps)"
     groups:
-      rust-dependencies:
-        patterns: ["*"]
+      # Minor and patch updates together; each major version gets its own PR,
+      # because majors usually need code changes.
+      rust-minor-and-patch:
+        update-types: ["minor", "patch"]
+    ignore:
+      # zbus 6 removed the blocking API the service uses; see issue #7.
+      - dependency-name: zbus
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: monthly
-    commit-message:
-      prefix: "ci"
+    groups:
+      github-actions:
+        patterns: ["*"]
