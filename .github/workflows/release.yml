@@ -56,7 +56,7 @@ jobs:
           gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --title "Captionist ${TAG#v}" --notes-file CHANGELOG.md
           cd dist && sha256sum *.deb > SHA256SUMS && cd ..
           gh release upload "$TAG" dist/*.deb dist/SHA256SUMS --clobber
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: release-deb
           path: dist/*.deb
