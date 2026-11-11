@@ -5,6 +5,13 @@ All notable changes to Captionist are listed here. The format follows
 [Semantic Versioning](https://semver.org/). From 0.1.0 on, entries are
 generated from commit messages by release-please (see [CONTRIBUTING.md](CONTRIBUTING.md)).
 
+## [0.1.1](https://github.com/m-umair-khan-dev/captionist/compare/v0.1.0...v0.1.1) (2026-11-11)
+
+
+### Bug Fixes
+
+* serve the caption service over GIO D-Bus instead of zbus ([#9](https://github.com/m-umair-khan-dev/captionist/issues/9)) ([c846523](https://github.com/m-umair-khan-dev/captionist/commit/c84652399edf6df101c5f9d337a2913675595d78))
+
 ## 0.1.0 (2026-11-11)
 
 First public preview.
