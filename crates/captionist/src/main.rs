@@ -12,7 +12,7 @@ use client::Client;
 use gtk::{gio, glib};
 use widgets::{choice_row, color_row, spin_row, switch_row};
 
-const APP_ID: &str = "io.github.captionist.Captionist";
+const APP_ID: &str = "io.github.m_umair_khan_dev.Captionist";
 
 const SOURCES: &[(&str, &str)] = &[
     ("speakers", "Speakers / headphones"),

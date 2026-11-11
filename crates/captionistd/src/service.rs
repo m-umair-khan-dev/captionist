@@ -1,4 +1,4 @@
-//! D-Bus interface `io.github.captionist.Daemon1` on `io.github.captionist.Daemon`.
+//! D-Bus interface `io.github.m_umair_khan_dev.Captionist.Daemon1` on `io.github.m_umair_khan_dev.Captionist.Daemon`.
 //!
 //! Signals (emitted from worker threads via `Shared::emit`):
 //!   Partial(u id, s text)   Final(u id, s text)   StatusChanged(s json)
@@ -29,7 +29,7 @@ fn spawn_job(
     });
 }
 
-#[zbus::interface(name = "io.github.captionist.Daemon1")]
+#[zbus::interface(name = "io.github.m_umair_khan_dev.Captionist.Daemon1")]
 impl Service {
     /// Returns the version. Calling it starts the service (D-Bus activation).
     fn ping(&self) -> String {

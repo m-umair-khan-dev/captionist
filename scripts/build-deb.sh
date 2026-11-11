@@ -5,7 +5,7 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 VERSION=$(grep -m1 '^version' "$ROOT/Cargo.toml" | cut -d'"' -f2)
-UUID="captionist@captionist.github.io"
+UUID="captionist@m-umair-khan-dev.github.io"
 
 [[ "${1:-}" == "--no-build" ]] || "$ROOT/scripts/cargo-docker.sh" build --release -p captionist -p captionistd
 
@@ -19,12 +19,12 @@ install -Dm755 "$ROOT/target/release/captionistd" "$P/usr/libexec/captionist/cap
 cp -a "$ROOT"/third_party/sherpa-onnx/lib/*.so* "$P/usr/libexec/captionist/"
 install -Dm644 "$ROOT/data/calibration.wav" "$P/usr/share/captionist/calibration.wav"
 install -Dm644 "$ROOT/data/silero_vad.onnx" "$P/usr/share/captionist/silero_vad.onnx"
-install -Dm644 "$ROOT/data/io.github.captionist.Captionist.gschema.xml" "$P/usr/share/glib-2.0/schemas/io.github.captionist.Captionist.gschema.xml"
-install -Dm644 "$ROOT/data/icons/io.github.captionist.Captionist.svg" "$P/usr/share/icons/hicolor/scalable/apps/io.github.captionist.Captionist.svg"
-install -Dm644 "$ROOT/data/icons/io.github.captionist.Captionist-symbolic.svg" "$P/usr/share/icons/hicolor/symbolic/apps/io.github.captionist.Captionist-symbolic.svg"
+install -Dm644 "$ROOT/data/io.github.m_umair_khan_dev.Captionist.gschema.xml" "$P/usr/share/glib-2.0/schemas/io.github.m_umair_khan_dev.Captionist.gschema.xml"
+install -Dm644 "$ROOT/data/icons/io.github.m_umair_khan_dev.Captionist.svg" "$P/usr/share/icons/hicolor/scalable/apps/io.github.m_umair_khan_dev.Captionist.svg"
+install -Dm644 "$ROOT/data/icons/io.github.m_umair_khan_dev.Captionist-symbolic.svg" "$P/usr/share/icons/hicolor/symbolic/apps/io.github.m_umair_khan_dev.Captionist-symbolic.svg"
 mkdir -p "$P/usr/share/applications" "$P/usr/share/dbus-1/services" "$P/usr/lib/systemd/user"
-sed "s|@BINDIR@|/usr/bin|g" "$ROOT/data/io.github.captionist.Captionist.desktop.in" > "$P/usr/share/applications/io.github.captionist.Captionist.desktop"
-sed "s|@LIBEXECDIR@|/usr/libexec/captionist|g" "$ROOT/data/io.github.captionist.Daemon.service.in" > "$P/usr/share/dbus-1/services/io.github.captionist.Daemon.service"
+sed "s|@BINDIR@|/usr/bin|g" "$ROOT/data/io.github.m_umair_khan_dev.Captionist.desktop.in" > "$P/usr/share/applications/io.github.m_umair_khan_dev.Captionist.desktop"
+sed "s|@LIBEXECDIR@|/usr/libexec/captionist|g" "$ROOT/data/io.github.m_umair_khan_dev.Captionist.Daemon.service.in" > "$P/usr/share/dbus-1/services/io.github.m_umair_khan_dev.Captionist.Daemon.service"
 sed "s|@LIBEXECDIR@|/usr/libexec/captionist|g" "$ROOT/data/captionistd.service.in" > "$P/usr/lib/systemd/user/captionistd.service"
 
 EXT="$P/usr/share/gnome-shell/extensions/$UUID"
@@ -33,7 +33,7 @@ cp "$ROOT"/extension/{metadata.json,extension.js,overlay.js,controls.js,styleshe
 cp -r "$ROOT/extension/icons" "$EXT/"
 # The extension shows the same version as the app (single source: Cargo.toml).
 sed -i "s/\"version-name\": \"[^\"]*\"/\"version-name\": \"$VERSION\"/" "$EXT/metadata.json"
-cp "$ROOT/data/io.github.captionist.Captionist.gschema.xml" "$EXT/schemas/"
+cp "$ROOT/data/io.github.m_umair_khan_dev.Captionist.gschema.xml" "$EXT/schemas/"
 glib-compile-schemas "$EXT/schemas"
 
 mkdir -p "$P/DEBIAN"

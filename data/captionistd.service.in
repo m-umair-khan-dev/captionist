@@ -5,7 +5,7 @@ PartOf=graphical-session.target
 
 [Service]
 Type=dbus
-BusName=io.github.captionist.Daemon
+BusName=io.github.m_umair_khan_dev.Captionist.Daemon
 ExecStart=@LIBEXECDIR@/captionistd
 Restart=on-failure
 RestartSec=3

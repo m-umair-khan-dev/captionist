@@ -3,9 +3,9 @@
 use adw::prelude::*;
 use gtk::{gio, glib};
 
-pub const NAME: &str = "io.github.captionist.Daemon";
-pub const PATH: &str = "/io/github/captionist/Daemon";
-pub const IFACE: &str = "io.github.captionist.Daemon1";
+pub const NAME: &str = "io.github.m_umair_khan_dev.Captionist.Daemon";
+pub const PATH: &str = "/io/github/m_umair_khan_dev/Captionist/Daemon";
+pub const IFACE: &str = "io.github.m_umair_khan_dev.Captionist.Daemon1";
 
 #[derive(Clone)]
 pub struct Client {

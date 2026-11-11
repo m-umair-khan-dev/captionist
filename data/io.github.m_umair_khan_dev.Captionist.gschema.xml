@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="captionist">
-  <schema id="io.github.captionist.Captionist" path="/io/github/captionist/Captionist/">
+  <schema id="io.github.m_umair_khan_dev.Captionist" path="/io/github/m_umair_khan_dev/Captionist/">
 
     <!-- General -->
     <key name="enabled" type="b">

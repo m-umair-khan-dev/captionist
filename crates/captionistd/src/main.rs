@@ -25,7 +25,7 @@ use std::sync::Arc;
 use std::sync::mpsc;
 use std::time::Duration;
 
-const SCHEMA: &str = "io.github.captionist.Captionist";
+const SCHEMA: &str = "io.github.m_umair_khan_dev.Captionist";
 
 fn unix_now() -> f64 {
     std::time::SystemTime::now()

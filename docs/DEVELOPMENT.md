@@ -7,11 +7,11 @@ How Captionist is built, tested, packaged and released.
 | Path | What |
 |---|---|
 | `crates/captionist` | Settings window (GTK4 / libadwaita) |
-| `crates/captionistd` | Caption service, D-Bus `io.github.captionist.Daemon`, started on demand via a systemd user unit |
+| `crates/captionistd` | Caption service, D-Bus `io.github.m_umair_khan_dev.Captionist.Daemon`, started on demand via a systemd user unit |
 | `crates/captionist-engine` | Capture (`pw-record`), Silero VAD, two-pass recognition, calibration, downloads, acceleration packs |
 | `crates/captionist-core` | Hardware probe, model catalogue, recommendation and acceleration advice |
 | `crates/captionist-bench` | `captionist-bench` CLI: speed and accuracy tests |
-| `extension/` | GNOME Shell 51 extension `captionist@captionist.github.io` (caption box, top-bar menu, Quick Settings) |
+| `extension/` | GNOME Shell 51 extension `captionist@m-umair-khan-dev.github.io` (caption box, top-bar menu, Quick Settings) |
 | `data/models.toml` | Model catalogue (add a model = add an entry) |
 | `scripts/` | Docker cargo wrapper, sherpa-onnx build, packaging, test-asset download |
 

@@ -15,9 +15,9 @@ use crate::history::History;
 use captionist_core::history::Entry;
 use captionist_engine::text::PostProcessor;
 
-pub const NAME: &str = "io.github.captionist.Daemon";
-pub const PATH: &str = "/io/github/captionist/Daemon";
-pub const IFACE: &str = "io.github.captionist.Daemon1";
+pub const NAME: &str = "io.github.m_umair_khan_dev.Captionist.Daemon";
+pub const PATH: &str = "/io/github/m_umair_khan_dev/Captionist/Daemon";
+pub const IFACE: &str = "io.github.m_umair_khan_dev.Captionist.Daemon1";
 
 /// Requests for the main thread (which owns GSettings and the pipeline).
 #[derive(Debug)]

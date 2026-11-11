@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="data/icons/io.github.captionist.Captionist.svg" width="128" height="128" alt="Captionist logo: a sound wave turning into lines of caption text">
+  <img src="data/icons/io.github.m_umair_khan_dev.Captionist.svg" width="128" height="128" alt="Captionist logo: a sound wave turning into lines of caption text">
 </p>
 
 <h1 align="center">Captionist</h1>

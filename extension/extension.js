@@ -18,10 +18,10 @@ import {QuickToggle, SystemIndicator} from 'resource:///org/gnome/shell/ui/quick
 
 import {CaptionOverlay} from './overlay.js';
 
-const BUS_NAME = 'io.github.captionist.Daemon';
-const OBJECT_PATH = '/io/github/captionist/Daemon';
-const IFACE = 'io.github.captionist.Daemon1';
-const APP_ID = 'io.github.captionist.Captionist.desktop';
+const BUS_NAME = 'io.github.m_umair_khan_dev.Captionist.Daemon';
+const OBJECT_PATH = '/io/github/m_umair_khan_dev/Captionist/Daemon';
+const IFACE = 'io.github.m_umair_khan_dev.Captionist.Daemon1';
+const APP_ID = 'io.github.m_umair_khan_dev.Captionist.desktop';
 /** Captionist's own symbolic icon, shipped in the extension (recoloured by GNOME). */
 let ICON = null;
 const iconFor = path => Gio.icon_new_for_string(`${path}/icons/captionist-symbolic.svg`);

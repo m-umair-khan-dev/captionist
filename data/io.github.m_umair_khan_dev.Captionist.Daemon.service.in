@@ -1,4 +1,4 @@
 [D-BUS Service]
-Name=io.github.captionist.Daemon
+Name=io.github.m_umair_khan_dev.Captionist.Daemon
 Exec=@LIBEXECDIR@/captionistd
 SystemdService=captionistd.service

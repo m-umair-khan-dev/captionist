@@ -15,7 +15,7 @@ PREFIX="$HOME/.local"
 BINDIR="$PREFIX/bin"
 LIBEXECDIR="$PREFIX/lib/captionist"
 DATADIR="${XDG_DATA_HOME:-$HOME/.local/share}"
-UUID="captionist@captionist.github.io"
+UUID="captionist@m-umair-khan-dev.github.io"
 BUILD=1
 SEED=""
 
@@ -47,21 +47,21 @@ cp -a "$ROOT"/third_party/sherpa-onnx/lib/*.so* "$LIBEXECDIR/"
 echo "==> Installing data"
 install -Dm644 "$ROOT/data/calibration.wav" "$DATADIR/captionist/calibration.wav"
 install -Dm644 "$ROOT/data/silero_vad.onnx" "$DATADIR/captionist/silero_vad.onnx"
-install -Dm644 "$ROOT/data/icons/io.github.captionist.Captionist.svg" \
-  "$DATADIR/icons/hicolor/scalable/apps/io.github.captionist.Captionist.svg"
+install -Dm644 "$ROOT/data/icons/io.github.m_umair_khan_dev.Captionist.svg" \
+  "$DATADIR/icons/hicolor/scalable/apps/io.github.m_umair_khan_dev.Captionist.svg"
 mkdir -p "$DATADIR/applications"
-sed "s|@BINDIR@|$BINDIR|g" "$ROOT/data/io.github.captionist.Captionist.desktop.in" \
-  > "$DATADIR/applications/io.github.captionist.Captionist.desktop"
+sed "s|@BINDIR@|$BINDIR|g" "$ROOT/data/io.github.m_umair_khan_dev.Captionist.desktop.in" \
+  > "$DATADIR/applications/io.github.m_umair_khan_dev.Captionist.desktop"
 
 echo "==> Installing settings schema"
-install -Dm644 "$ROOT/data/io.github.captionist.Captionist.gschema.xml" \
-  "$DATADIR/glib-2.0/schemas/io.github.captionist.Captionist.gschema.xml"
+install -Dm644 "$ROOT/data/io.github.m_umair_khan_dev.Captionist.gschema.xml" \
+  "$DATADIR/glib-2.0/schemas/io.github.m_umair_khan_dev.Captionist.gschema.xml"
 glib-compile-schemas "$DATADIR/glib-2.0/schemas"
 
 echo "==> Installing caption service (D-Bus + systemd user unit)"
 mkdir -p "$DATADIR/dbus-1/services" "$HOME/.config/systemd/user"
-sed "s|@LIBEXECDIR@|$LIBEXECDIR|g" "$ROOT/data/io.github.captionist.Daemon.service.in" \
-  > "$DATADIR/dbus-1/services/io.github.captionist.Daemon.service"
+sed "s|@LIBEXECDIR@|$LIBEXECDIR|g" "$ROOT/data/io.github.m_umair_khan_dev.Captionist.Daemon.service.in" \
+  > "$DATADIR/dbus-1/services/io.github.m_umair_khan_dev.Captionist.Daemon.service"
 sed "s|@LIBEXECDIR@|$LIBEXECDIR|g" "$ROOT/data/captionistd.service.in" \
   > "$HOME/.config/systemd/user/captionistd.service"
 systemctl --user daemon-reload
@@ -77,7 +77,7 @@ cp -r "$ROOT/extension/icons" "$EXT/"
 # The extension shows the same version as the app (single source: Cargo.toml).
 VERSION=$(grep -m1 '^version' "$ROOT/Cargo.toml" | cut -d'"' -f2)
 sed -i "s/\"version-name\": \"[^\"]*\"/\"version-name\": \"$VERSION\"/" "$EXT/metadata.json"
-cp "$ROOT/data/io.github.captionist.Captionist.gschema.xml" "$EXT/schemas/"
+cp "$ROOT/data/io.github.m_umair_khan_dev.Captionist.gschema.xml" "$EXT/schemas/"
 glib-compile-schemas "$EXT/schemas"
 
 if [[ -n "$SEED" ]]; then
