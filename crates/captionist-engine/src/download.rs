@@ -42,11 +42,13 @@ pub fn download(m: &ModelEntry, models_root: &Path, progress: impl FnMut(f64)) -
             .call()
             .with_context(|| format!("downloading {}", m.url))?;
         let total = resp
-            .header("Content-Length")
+            .headers()
+            .get("Content-Length")
+            .and_then(|v| v.to_str().ok())
             .and_then(|v| v.parse::<u64>().ok())
             .unwrap_or(m.download_mb as u64 * 1_048_576);
         let reader = Progress {
-            inner: resp.into_reader(),
+            inner: resp.into_body().into_reader(),
             read: 0,
             total,
             last_pct: -1,

@@ -65,10 +65,12 @@ fn download_verified(pack: &Pack, dest: &Path, mut progress: impl FnMut(f64)) ->
         .call()
         .with_context(|| format!("downloading {}", pack.name))?;
     let total = resp
-        .header("Content-Length")
+        .headers()
+        .get("Content-Length")
+        .and_then(|v| v.to_str().ok())
         .and_then(|v| v.parse::<u64>().ok())
         .unwrap_or(pack.download_mb as u64 * 1_048_576);
-    let mut reader = resp.into_reader();
+    let mut reader = resp.into_body().into_reader();
     let mut file = fs::File::create(dest)?;
     let mut hasher = Sha256::new();
     let mut buf = vec![0u8; 1 << 16];
@@ -87,7 +89,11 @@ fn download_verified(pack: &Pack, dest: &Path, mut progress: impl FnMut(f64)) ->
             progress((read as f64 / total as f64).min(1.0));
         }
     }
-    let digest = format!("{:x}", hasher.finalize());
+    let digest: String = hasher
+        .finalize()
+        .iter()
+        .map(|b| format!("{b:02x}"))
+        .collect();
     if digest != pack.sha256 {
         bail!("{} failed its checksum check", pack.name);
     }
@@ -119,7 +125,8 @@ pub fn install_pack(pack: &Pack, progress: impl FnMut(f64)) -> Result<()> {
                 let mut zip = zip::ZipArchive::new(fs::File::open(&archive)?)?;
                 for i in 0..zip.len() {
                     let mut f = zip.by_index(i)?;
-                    let Some(base) = wanted(f.name(), pack.lib_prefix) else {
+                    let name = f.name()?.to_string();
+                    let Some(base) = wanted(&name, pack.lib_prefix) else {
                         continue;
                     };
                     let mut data = vec![];
