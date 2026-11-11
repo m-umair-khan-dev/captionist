@@ -5,6 +5,13 @@ All notable changes to Captionist are listed here. The format follows
 [Semantic Versioning](https://semver.org/). From 0.1.0 on, entries are
 generated from commit messages by release-please (see [CONTRIBUTING.md](CONTRIBUTING.md)).
 
+## [0.1.1](https://github.com/m-umair-khan-dev/captionist/compare/v0.1.0...v0.1.1) (2026-11-11)
+
+
+### Bug Fixes
+
+* update zip and other dependencies to resolve security advisories ([c6c5947](https://github.com/m-umair-khan-dev/captionist/commit/c6c59472bed1f2de548bdaaa443f3f1270f2b376))
+
 ## 0.1.0 (unreleased)
 
 First public preview.

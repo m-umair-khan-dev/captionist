@@ -3,7 +3,7 @@ resolver = "3"
 members = ["crates/captionist-core", "crates/captionist-engine", "crates/captionist-bench", "crates/captionistd", "crates/captionist"]
 
 [workspace.package]
-version = "0.1.0" # x-release-please-version
+version = "0.1.1" # x-release-please-version
 edition = "2024"
 license = "GPL-3.0-or-later"
 repository = "https://github.com/m-umair-khan-dev/captionist"
