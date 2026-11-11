@@ -339,17 +339,11 @@ fn main() -> Result<()> {
     let (tx, rx) = mpsc::channel::<Cmd>();
     let shared = Arc::new(Shared::new(tx.clone()));
 
-    let conn = zbus::blocking::connection::Builder::session()?
-        .name(shared::NAME)?
-        .serve_at(
-            shared::PATH,
-            service::Service {
-                shared: shared.clone(),
-            },
-        )?
-        .build()
+    let conn = gio::bus_get_sync(gio::BusType::Session, gio::Cancellable::NONE)
+        .context("could not connect to the session bus")?;
+    let _ = shared.conn.set(conn.clone());
+    service::serve(&conn, shared.clone())
         .context("could not claim the D-Bus name (is captionistd already running?)")?;
-    let _ = shared.conn.set(conn);
 
     *shared.accel_setting.lock().unwrap() = Kind::parse(&settings.string("accelerator"));
     let ctl = Rc::new(RefCell::new(Controller {

@@ -11,10 +11,6 @@ updates:
       # because majors usually need code changes.
       rust-minor-and-patch:
         update-types: ["minor", "patch"]
-    ignore:
-      # zbus 6 removed the blocking API the service uses; see issue #7.
-      - dependency-name: zbus
-        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: github-actions
     directory: /

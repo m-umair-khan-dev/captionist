@@ -53,7 +53,7 @@ pub struct Shared {
     /// (live model id, refine model id) currently running.
     pub active: Mutex<(Option<String>, Option<String>)>,
     pub status: Mutex<String>,
-    pub conn: OnceLock<zbus::blocking::Connection>,
+    pub conn: OnceLock<gio::DBusConnection>,
     pub cmd: Mutex<Sender<Cmd>>,
     /// Vocabulary / replacements / profanity filter, shared with the pipeline.
     pub post: Arc<RwLock<PostProcessor>>,
@@ -117,9 +117,11 @@ impl Shared {
         let _ = self.cmd.lock().unwrap().send(c);
     }
 
-    pub fn emit<B: serde::Serialize + zbus::zvariant::DynamicType>(&self, signal: &str, body: &B) {
+    /// Broadcasts a signal. `body` is a tuple of the signal's arguments.
+    /// Safe to call from any thread.
+    pub fn emit<B: glib::variant::ToVariant>(&self, signal: &str, body: &B) {
         if let Some(conn) = self.conn.get() {
-            let _ = conn.emit_signal(None::<zbus::names::BusName>, PATH, IFACE, signal, body);
+            let _ = conn.emit_signal(None, PATH, IFACE, signal, Some(&body.to_variant()));
         }
     }
 
