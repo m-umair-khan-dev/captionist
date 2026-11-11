@@ -3,7 +3,7 @@
 ## How it works
 
 ```
- PR (fix: / feat: …) ──squash-merge──▶ main
+ PR ("fix: …" or plain title) ──squash-merge──▶ main
                                          │  release-please
                                          ▼
                      "chore(main): release 0.2.1" PR   ← keeps updating as more PRs land
@@ -26,7 +26,8 @@
 - **Version source:** `Cargo.toml` (`[workspace.package] version`, marked
   `# x-release-please-version`). The `.deb` and the extension's version are stamped from it.
 - **Tags:** `vX.Y.Z`, created only by release-please; never move or delete a tag.
-- **Changelog:** `CHANGELOG.md`, generated from PR titles (see CONTRIBUTING.md).
+- **Changelog:** `CHANGELOG.md`, generated from `fix:` PR titles (see CONTRIBUTING.md).
+- **Feature releases:** add the line `Release-As: 0.X.0` to a commit message to bump the minor version.
 
 ## One-time setup (before the first release)
 

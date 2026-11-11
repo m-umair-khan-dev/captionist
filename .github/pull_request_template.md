@@ -8,6 +8,6 @@
 
 ## Checklist
 
-- [ ] The PR title follows [Conventional Commits](https://www.conventionalcommits.org/) (`fix: …`, `feat: …`, `docs: …`): it becomes the changelog entry
+- [ ] The PR title is one short line, starting with `fix:` if it fixes a bug (it becomes the commit message and changelog entry)
 - [ ] `scripts/cargo-docker.sh fmt --all` and `clippy` are clean, tests pass
 - [ ] User-visible changes are reflected in README.md if needed

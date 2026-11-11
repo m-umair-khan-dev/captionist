@@ -25,19 +25,13 @@ code are all welcome.
 
 ## Commit messages and PR titles
 
-We use [Conventional Commits](https://www.conventionalcommits.org/). Pull requests
-are squash-merged, so **the PR title becomes the changelog entry** and decides the
-next version number:
+Pull requests are squash-merged, so **the PR title becomes the commit message**
+on `main`. Keep it short (one line, at most two).
 
-| Prefix | Use for | Version bump (while 0.x) |
+| Change | Title | Release |
 |---|---|---|
-| `fix:` | A bug fix | patch: 0.2.0 → 0.2.1 |
-| `feat:` | A new user-visible feature | minor: 0.2.1 → 0.3.0 |
-| `feat!:` or `BREAKING CHANGE:` | Incompatible change (settings, IDs…) | minor while 0.x, major from 1.0 |
-| `docs:` `ci:` `chore:` `refactor:` `test:` `perf:` | Everything else | none on its own |
-
-Examples: `fix: caption box hides while the menu is open`,
-`feat: speaker labels in history export`.
+| Bug fix | Starts with **`fix:`**, e.g. `fix: caption box hides while the menu is open` | Triggers a patch release (0.2.0 → 0.2.1) and a changelog entry |
+| Anything else (features, docs, CI, refactoring) | No prefix, e.g. `Add speaker labels to history export` | Shipped in the next release; maintainers choose when a feature release (0.3.0) happens |
 
 ## How releases reach users
 
