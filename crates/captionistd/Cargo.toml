@@ -11,9 +11,9 @@ captionist-engine = { path = "../captionist-engine" }
 anyhow.workspace = true
 serde.workspace = true
 serde_json.workspace = true
-zbus = "5"
+zbus = "6"
 gio = "0.22"
 glib = "0.22"
 # Opt-in crash reports only; no default transport (avoids an async runtime).
-signal-hook = "0.3"
+signal-hook = "0.4"
 sentry = { version = "0.49", default-features = false, features = ["backtrace", "contexts", "panic", "ureq", "rustls"] }

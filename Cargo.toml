@@ -12,7 +12,7 @@ repository = "https://github.com/m-umair-khan-dev/captionist"
 anyhow = "1"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-toml = "0.9"
+toml = "1.2"
 clap = { version = "4", features = ["derive"] }
 # Shared build of sherpa-onnx against ONNX Runtime 1.24.1 (scripts/build-sherpa.sh),
 # so the runtime can be swapped for Intel's OpenVINO build at load time.
