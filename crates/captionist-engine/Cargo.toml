@@ -11,9 +11,9 @@ anyhow.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 sherpa-onnx.workspace = true
-ureq = "2"
-bzip2 = "0.4"
+ureq = "3"
+bzip2 = "0.6"
 tar = "0.4"
 flate2 = "1"
-sha2 = "0.10"
-zip = { version = "2", default-features = false, features = ["deflate"] }
+sha2 = "0.11"
+zip = { version = "9", default-features = false, features = ["deflate"] }
