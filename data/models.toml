@@ -1,0 +1,172 @@
+# Captionist model catalogue.
+#
+# role:   live   = pass 1, streaming draft text
+#         refine = pass 2, re-reads each finished sentence
+# rank:   fallback accuracy order (higher = more accurate) until wer_* is measured
+# wer_*:  word error rate (%) on LibriSpeech test-clean / test-other,
+#         measured with `captionist-bench eval` (lower = better).
+#         Measured 2026-11-09: 60 utterances per set (Nemotron: 15), 2 threads.
+# ref_*:  speed (RTF) and peak RAM on the reference PC (Intel N150, 2 threads).
+#         Other PCs time the calibration model and scale these to estimate
+#         speed without downloading every model.
+#
+# Adding a model = adding an entry here. No code changes needed.
+
+# ───────────────────────────── Pass 1: live ─────────────────────────────
+
+[[model]]
+id = "kroko-en"
+name = "Kroko (Banafo)"
+summary = "Small and very fast. Good live captions on almost any PC."
+ref_rtf = 0.045
+ref_ram_mb = 199
+calibration = true
+role = "live"
+engine = "online-transducer"
+dir = "sherpa-onnx-streaming-zipformer-en-kroko-2025-08-06"
+url = "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-streaming-zipformer-en-kroko-2025-08-06.tar.bz2"
+download_mb = 54
+rank = 2
+wer_clean = 6.26
+wer_other = 11.18
+notes = "Small streaming Zipformer trained on more varied audio. Check licence before shipping."
+[model.files]
+encoder = "encoder.onnx"
+decoder = "decoder.onnx"
+joiner = "joiner.onnx"
+tokens = "tokens.txt"
+
+[[model]]
+id = "nemotron35-160ms"
+name = "Nemotron 3.5 Streaming (160 ms)"
+summary = "NVIDIA. Very accurate with the lowest delay. Needs a powerful CPU or a GPU."
+ref_rtf = 1.702
+ref_ram_mb = 956
+role = "live"
+engine = "online-transducer"
+dir = "sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-160ms-int8-2026-06-11"
+url = "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-160ms-int8-2026-06-11.tar.bz2"
+download_mb = 453
+rank = 4
+wer_clean = 4.52
+wer_other = 11.15
+punctuation = true
+notes = "NVIDIA, 0.6B, multilingual. Lowest delay, more compute per second of audio."
+[model.stream_options]
+language = "en"
+[model.files]
+encoder = "encoder.int8.onnx"
+decoder = "decoder.int8.onnx"
+joiner = "joiner.int8.onnx"
+tokens = "tokens.txt"
+
+[[model]]
+id = "nemotron35-560ms"
+name = "Nemotron 3.5 Streaming (560 ms)"
+summary = "NVIDIA. Very accurate live captions. Needs a fast CPU or a GPU."
+ref_rtf = 0.638
+ref_ram_mb = 960
+role = "live"
+engine = "online-transducer"
+dir = "sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11"
+url = "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11.tar.bz2"
+download_mb = 453
+rank = 5
+wer_clean = 4.22
+wer_other = 8.2
+punctuation = true
+tail_padding_s = 1.2
+notes = "NVIDIA, 0.6B, multilingual. Larger chunks: cheaper and slightly more accurate than 160 ms."
+[model.stream_options]
+language = "en"
+[model.files]
+encoder = "encoder.int8.onnx"
+decoder = "decoder.int8.onnx"
+joiner = "joiner.int8.onnx"
+tokens = "tokens.txt"
+
+[[model]]
+id = "moonshine-tiny-en"
+name = "Moonshine Tiny"
+summary = "Tiny and quick. Basic correction for low-end PCs."
+ref_rtf = 0.037
+ref_ram_mb = 305
+role = "refine"
+engine = "offline-moonshine"
+dir = "sherpa-onnx-moonshine-tiny-en-quantized-2026-02-27"
+url = "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-moonshine-tiny-en-quantized-2026-02-27.tar.bz2"
+download_mb = 28
+rank = 2
+wer_clean = 5.91
+wer_other = 12.14
+punctuation = true
+[model.files]
+encoder = "encoder_model.ort"
+merged_decoder = "decoder_model_merged.ort"
+tokens = "tokens.txt"
+
+[[model]]
+id = "moonshine-base-en"
+name = "Moonshine Base"
+summary = "Light correction with good accuracy."
+ref_rtf = 0.067
+ref_ram_mb = 429
+role = "refine"
+engine = "offline-moonshine"
+dir = "sherpa-onnx-moonshine-base-en-quantized-2026-02-27"
+url = "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-moonshine-base-en-quantized-2026-02-27.tar.bz2"
+download_mb = 106
+rank = 3
+wer_clean = 3.77
+wer_other = 8.31
+punctuation = true
+[model.files]
+encoder = "encoder_model.ort"
+merged_decoder = "decoder_model_merged.ort"
+tokens = "tokens.txt"
+
+[[model]]
+id = "parakeet-tdt-110m"
+name = "Parakeet TDT 110M"
+summary = "Small NVIDIA model. Very accurate for its size."
+ref_rtf = 0.056
+ref_ram_mb = 502
+role = "refine"
+engine = "offline-transducer"
+model_type = "nemo_transducer"
+dir = "sherpa-onnx-nemo-parakeet_tdt_transducer_110m-en-36000-int8"
+url = "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-nemo-parakeet_tdt_transducer_110m-en-36000-int8.tar.bz2"
+download_mb = 103
+rank = 4
+wer_clean = 3.49
+wer_other = 5.74
+punctuation = true
+[model.files]
+encoder = "encoder.int8.onnx"
+decoder = "decoder.int8.onnx"
+joiner = "joiner.int8.onnx"
+tokens = "tokens.txt"
+
+[[model]]
+id = "parakeet-tdt-0.6b-v2"
+name = "Parakeet TDT 0.6B v2"
+summary = "NVIDIA's best English model. Highest accuracy."
+ref_rtf = 0.228
+ref_ram_mb = 1483
+role = "refine"
+engine = "offline-transducer"
+model_type = "nemo_transducer"
+dir = "sherpa-onnx-nemo-parakeet-tdt-0.6b-v2-int8"
+url = "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-nemo-parakeet-tdt-0.6b-v2-int8.tar.bz2"
+download_mb = 460
+rank = 7
+wer_clean = 2.85
+wer_other = 3.24
+punctuation = true
+notes = "Main accuracy model for English."
+[model.files]
+encoder = "encoder.int8.onnx"
+decoder = "decoder.int8.onnx"
+joiner = "joiner.int8.onnx"
+tokens = "tokens.txt"
+

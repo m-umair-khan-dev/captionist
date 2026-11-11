@@ -1,0 +1,68 @@
+name: Bug report
+description: Something doesn't work as expected
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Captionist! Questions and ideas are welcome in
+        [Discussions](https://github.com/m-umair-khan-dev/captionist/discussions);
+        this form is for bugs. Security problems: please report them privately
+        (see SECURITY.md), not here.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+      placeholder: "I turned captions on while a YouTube video played in Firefox, but the caption box stayed empty."
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. …
+        2. …
+  - type: input
+    id: version
+    attributes:
+      label: Captionist version
+      description: "Run: `dpkg -s captionist | grep Version`"
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: Distribution and GNOME version
+      description: "Run: `grep PRETTY /etc/os-release; gnome-shell --version`"
+      placeholder: "Ubuntu 26.10, GNOME Shell 51.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part?
+      options:
+        - Captions / accuracy
+        - Caption box (moving, resizing, menu)
+        - Top bar / Quick Settings
+        - Settings window
+        - Models / downloads
+        - Hardware acceleration
+        - History / export
+        - Installation / updates
+        - Other
+  - type: textarea
+    id: hardware
+    attributes:
+      label: Hardware
+      description: "Optional, but very helpful for speed and model problems. Paste the \"This PC\" lines from Settings → Models, or the output of: `lscpu | grep 'Model name'; free -h | head -2`"
+      render: text
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: "Run: `journalctl --user -u captionistd -b --no-pager | tail -50`. Remove anything private (captions can contain what was said)."
+      render: text

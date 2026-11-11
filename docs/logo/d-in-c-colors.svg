@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1500" height="660" viewBox="0 0 1500 660" font-family="Cantarell, Inter, sans-serif">
+  <defs>
+    <!-- D1: light tile, dark caption box holding the wave + text, yellow cursor -->
+    <g id="D1">
+      <rect x="8" y="16" width="112" height="104" rx="26" fill="#c0bfbc"/>
+      <rect x="8" y="8" width="112" height="104" rx="26" fill="#f6f5f4"/>
+      <rect x="16" y="28" width="96" height="64" rx="14" fill="#241f31"/>
+      <rect x="27" y="52" width="6" height="16" rx="3" fill="#fff"/>
+      <rect x="36" y="42" width="6" height="36" rx="3" fill="#fff"/>
+      <rect x="45" y="48" width="6" height="24" rx="3" fill="#fff"/>
+      <rect x="58" y="44" width="42" height="8" rx="4" fill="#fff"/>
+      <rect x="58" y="57" width="34" height="8" rx="4" fill="#fff"/>
+      <rect x="58" y="70" width="22" height="8" rx="4" fill="#fff" opacity="0.45"/>
+      <rect x="84" y="67" width="4" height="14" rx="2" fill="#f6d32d"/>
+    </g>
+
+    <!-- D2: the whole tile is the dark caption box -->
+    <g id="D2">
+      <rect x="8" y="16" width="112" height="104" rx="26" fill="#0f0d14"/>
+      <rect x="8" y="8" width="112" height="104" rx="26" fill="#241f31"/>
+      <rect x="22" y="50" width="7" height="20" rx="3.5" fill="#fff"/>
+      <rect x="33" y="38" width="7" height="44" rx="3.5" fill="#fff"/>
+      <rect x="44" y="45" width="7" height="30" rx="3.5" fill="#fff"/>
+      <rect x="58" y="42" width="48" height="9" rx="4.5" fill="#fff"/>
+      <rect x="58" y="56" width="38" height="9" rx="4.5" fill="#fff"/>
+      <rect x="58" y="70" width="24" height="9" rx="4.5" fill="#fff" opacity="0.45"/>
+      <rect x="87" y="67" width="4" height="15" rx="2" fill="#f6d32d"/>
+    </g>
+
+    <!-- D3: light tile, charcoal wave + text drawn directly on it -->
+    <g id="D3">
+      <rect x="8" y="16" width="112" height="104" rx="26" fill="#c0bfbc"/>
+      <rect x="8" y="8" width="112" height="104" rx="26" fill="#f6f5f4"/>
+      <rect x="22" y="50" width="7" height="20" rx="3.5" fill="#241f31"/>
+      <rect x="33" y="38" width="7" height="44" rx="3.5" fill="#241f31"/>
+      <rect x="44" y="45" width="7" height="30" rx="3.5" fill="#241f31"/>
+      <rect x="58" y="42" width="48" height="9" rx="4.5" fill="#241f31"/>
+      <rect x="58" y="56" width="38" height="9" rx="4.5" fill="#241f31"/>
+      <rect x="58" y="70" width="24" height="9" rx="4.5" fill="#241f31" opacity="0.4"/>
+      <rect x="87" y="67" width="4" height="15" rx="2" fill="#e5a50a"/>
+    </g>
+
+    <!-- Top-bar (symbolic) icon: same for all three -->
+    <g id="sD" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round">
+      <path d="M2 6.5v3M4.5 4.5v7M7 5.5v5"/>
+      <path d="M9.5 5.5h5M9.5 8h3.5"/>
+      <path d="M9.5 10.5h2.5" opacity="0.55"/>
+    </g>
+  </defs>
+
+  <rect width="1500" height="660" fill="#fafafa"/>
+  <text x="60" y="78" font-size="38" font-weight="700" fill="#1c1c1c">Concept D in C's colours</text>
+  <text x="60" y="114" font-size="19" fill="#5e5c64">Sound wave → caption lines, with C's off-white, charcoal and yellow cursor (finished text white, draft dimmed)</text>
+
+  <!-- D1 -->
+  <g transform="translate(60 150)">
+    <rect width="440" height="460" rx="20" fill="#fff" stroke="#e0dfdc"/>
+    <use xlink:href="#D1" transform="translate(24 24) scale(1.375)"/>
+    <use xlink:href="#D1" transform="translate(228 40) scale(0.5)"/>
+    <use xlink:href="#D1" transform="translate(308 56) scale(0.25)"/>
+    <rect x="228" y="130" width="188" height="54" rx="12" fill="#1d1d1d"/>
+    <use xlink:href="#sD" transform="translate(244 145) scale(1.5)"/>
+    <text x="282" y="164" font-size="17" fill="#fff">Captionist</text>
+    <rect x="24" y="214" width="176" height="64" rx="14" fill="#241f31"/>
+    <use xlink:href="#D1" transform="translate(40 222) scale(0.375)"/>
+    <use xlink:href="#D1" transform="translate(110 222) scale(0.375)" opacity="0"/>
+    <text x="96" y="252" font-size="15" fill="#fff">dark theme</text>
+    <text x="24" y="320" font-size="26" font-weight="700" fill="#1c1c1c">D1 · Caption box</text>
+    <text x="24" y="354" font-size="17" fill="#3d3846">Light tile holding the dark caption box,</text>
+    <text x="24" y="376" font-size="17" fill="#3d3846">wave and words inside it.</text>
+    <text x="24" y="414" font-size="16" fill="#26a269">+ Closest blend of C and D; looks like the app</text>
+    <text x="24" y="438" font-size="16" fill="#c01c28">− Most detail; busiest at 32 px</text>
+  </g>
+
+  <!-- D2 -->
+  <g transform="translate(530 150)">
+    <rect width="440" height="460" rx="20" fill="#fff" stroke="#e0dfdc"/>
+    <use xlink:href="#D2" transform="translate(24 24) scale(1.375)"/>
+    <use xlink:href="#D2" transform="translate(228 40) scale(0.5)"/>
+    <use xlink:href="#D2" transform="translate(308 56) scale(0.25)"/>
+    <rect x="228" y="130" width="188" height="54" rx="12" fill="#1d1d1d"/>
+    <use xlink:href="#sD" transform="translate(244 145) scale(1.5)"/>
+    <text x="282" y="164" font-size="17" fill="#fff">Captionist</text>
+    <rect x="24" y="214" width="176" height="64" rx="14" fill="#241f31"/>
+    <use xlink:href="#D2" transform="translate(40 222) scale(0.375)"/>
+    <text x="96" y="252" font-size="15" fill="#fff">dark theme</text>
+    <text x="24" y="320" font-size="26" font-weight="700" fill="#1c1c1c">D2 · Dark tile</text>
+    <text x="24" y="354" font-size="17" fill="#3d3846">The whole icon is the caption box:</text>
+    <text x="24" y="376" font-size="17" fill="#3d3846">charcoal, white words, yellow cursor.</text>
+    <text x="24" y="414" font-size="16" fill="#26a269">+ Bold, high contrast, clear at every size</text>
+    <text x="24" y="438" font-size="16" fill="#c01c28">− Blends into a dark theme / dark panel</text>
+  </g>
+
+  <!-- D3 -->
+  <g transform="translate(1000 150)">
+    <rect width="440" height="460" rx="20" fill="#fff" stroke="#e0dfdc"/>
+    <use xlink:href="#D3" transform="translate(24 24) scale(1.375)"/>
+    <use xlink:href="#D3" transform="translate(228 40) scale(0.5)"/>
+    <use xlink:href="#D3" transform="translate(308 56) scale(0.25)"/>
+    <rect x="228" y="130" width="188" height="54" rx="12" fill="#1d1d1d"/>
+    <use xlink:href="#sD" transform="translate(244 145) scale(1.5)"/>
+    <text x="282" y="164" font-size="17" fill="#fff">Captionist</text>
+    <rect x="24" y="214" width="176" height="64" rx="14" fill="#241f31"/>
+    <use xlink:href="#D3" transform="translate(40 222) scale(0.375)"/>
+    <text x="96" y="252" font-size="15" fill="#fff">dark theme</text>
+    <text x="24" y="320" font-size="26" font-weight="700" fill="#1c1c1c">D3 · Ink on paper</text>
+    <text x="24" y="354" font-size="17" fill="#3d3846">Light tile with charcoal wave and</text>
+    <text x="24" y="376" font-size="17" fill="#3d3846">words, gold cursor.</text>
+    <text x="24" y="414" font-size="16" fill="#26a269">+ Clean and calm; fine in dark themes</text>
+    <text x="24" y="438" font-size="16" fill="#c01c28">− Quietest in the app grid</text>
+  </g>
+</svg>

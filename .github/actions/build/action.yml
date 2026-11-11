@@ -1,0 +1,72 @@
+name: Build Captionist
+description: Build sherpa-onnx (cached), the Rust workspace and the .deb, in the same Docker image used locally.
+inputs:
+  test:
+    description: Also run formatting, lint and unit tests
+    default: "true"
+runs:
+  using: composite
+  steps:
+    - name: Cache sherpa-onnx build
+      id: sherpa
+      uses: actions/cache@v4
+      with:
+        path: third_party/sherpa-onnx
+        key: sherpa-${{ hashFiles('packaging/sherpa/build-sherpa.sh', 'packaging/docker/Dockerfile') }}
+
+    - name: Build sherpa-onnx (only when the cache is empty, ~15 min)
+      if: steps.sherpa.outputs.cache-hit != 'true'
+      shell: bash
+      run: JOBS=4 scripts/build-sherpa.sh
+
+    - name: Use a cacheable folder for Rust packages
+      shell: bash
+      run: echo "CAPTIONIST_CARGO_HOME=${{ runner.temp }}/cargo-home" >> "$GITHUB_ENV"
+
+    - name: Cache Rust packages (downloaded crates)
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${{ runner.temp }}/cargo-home/registry/index
+          ${{ runner.temp }}/cargo-home/registry/cache
+          ${{ runner.temp }}/cargo-home/git/db
+        key: cargo-home-${{ hashFiles('Cargo.lock') }}
+        restore-keys: cargo-home-
+
+    - name: Cache Rust build
+      uses: actions/cache@v4
+      with:
+        path: target
+        key: target-${{ hashFiles('Cargo.lock', 'packaging/docker/Dockerfile') }}
+        restore-keys: target-
+
+    - name: Check formatting
+      if: inputs.test == 'true'
+      shell: bash
+      run: scripts/cargo-docker.sh fmt --all --check
+
+    - name: Lint
+      if: inputs.test == 'true'
+      shell: bash
+      run: scripts/cargo-docker.sh clippy --release --workspace --all-targets
+
+    - name: Build
+      shell: bash
+      run: scripts/cargo-docker.sh build --release
+
+    - name: Unit tests
+      if: inputs.test == 'true'
+      shell: bash
+      run: scripts/cargo-docker.sh test --release --workspace
+
+    - name: Check extension JavaScript syntax
+      if: inputs.test == 'true'
+      shell: bash
+      run: for f in extension/*.js; do node --check --input-type=module < "$f"; done
+
+    - name: Build .deb
+      shell: bash
+      run: |
+        sudo apt-get update -qq
+        sudo apt-get install -y -qq libglib2.0-bin
+        scripts/build-deb.sh --no-build

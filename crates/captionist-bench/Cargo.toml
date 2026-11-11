@@ -1,0 +1,15 @@
+[package]
+name = "captionist-bench"
+description = "Captionist hardware probe, model speed test and accuracy evaluation"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+captionist-core = { path = "../captionist-core" }
+captionist-engine = { path = "../captionist-engine" }
+anyhow.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+clap.workspace = true
+sherpa-onnx.workspace = true

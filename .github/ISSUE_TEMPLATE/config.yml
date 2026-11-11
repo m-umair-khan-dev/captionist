@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and help
+    url: https://github.com/m-umair-khan-dev/captionist/discussions
+    about: Ask how to do something, share setups, or discuss ideas.
+  - name: Report a security problem privately
+    url: https://github.com/m-umair-khan-dev/captionist/security/advisories/new
+    about: Please don't open public issues for security problems.

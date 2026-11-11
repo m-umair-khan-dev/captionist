@@ -1,0 +1,9 @@
+{
+  "uuid": "captionist@captionist.github.io",
+  "name": "Captionist Live Captions",
+  "description": "Real-time, private, on-device live captions for anything you hear. Requires the Captionist app.",
+  "shell-version": ["51"],
+  "settings-schema": "io.github.captionist.Captionist",
+  "url": "https://github.com/m-umair-khan-dev/captionist",
+  "version-name": "0.1.0"
+}

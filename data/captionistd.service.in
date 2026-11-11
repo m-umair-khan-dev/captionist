@@ -1,0 +1,11 @@
+[Unit]
+Description=Captionist live captions service
+Documentation=https://github.com/m-umair-khan-dev/captionist
+PartOf=graphical-session.target
+
+[Service]
+Type=dbus
+BusName=io.github.captionist.Daemon
+ExecStart=@LIBEXECDIR@/captionistd
+Restart=on-failure
+RestartSec=3

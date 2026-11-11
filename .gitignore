@@ -1,0 +1,14 @@
+/target
+/.bench
+/.fetch.log
+/dist
+/third_party
+PROPOSAL.md
+/.sherpa-build.log
+/captionist-apt-signing-key.asc
+*.private.asc
+sentry.md
+/.env
+/sentry.md
+CODE_OF_CONDUCT.md
+*.local.md

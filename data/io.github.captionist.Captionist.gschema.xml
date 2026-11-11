@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="captionist">
+  <schema id="io.github.captionist.Captionist" path="/io/github/captionist/Captionist/">
+
+    <!-- General -->
+    <key name="enabled" type="b">
+      <default>false</default>
+      <summary>Live captions on</summary>
+    </key>
+    <key name="toggle-shortcut" type="as">
+      <default><![CDATA[['<Super><Control>l']]]></default>
+      <summary>Shortcut to turn live captions on/off</summary>
+    </key>
+    <key name="show-indicator" type="b">
+      <default>true</default>
+      <summary>Show the top-bar icon</summary>
+    </key>
+    <key name="show-quick-settings" type="b">
+      <default>true</default>
+      <summary>Show a toggle in Quick Settings</summary>
+    </key>
+
+    <!-- Privacy -->
+    <key name="crash-reports" type="s">
+      <choices><choice value="ask"/><choice value="on"/><choice value="off"/></choices>
+      <default>'ask'</default>
+      <summary>Send anonymous crash and error reports: ask (not decided yet, nothing is sent), on, off</summary>
+    </key>
+
+    <!-- Audio -->
+    <key name="source" type="s">
+      <choices><choice value="speakers"/><choice value="mic"/><choice value="both"/><choice value="app"/></choices>
+      <default>'speakers'</default>
+      <summary>What to caption: speakers, mic, both, or one app</summary>
+    </key>
+    <key name="source-app" type="s">
+      <default>''</default>
+      <summary>App to caption when source is 'app' (PipeWire application.name)</summary>
+    </key>
+    <key name="hide-after" type="i">
+      <range min="0" max="120"/>
+      <default>8</default>
+      <summary>Hide captions after this many seconds of silence (0 = never)</summary>
+    </key>
+
+    <!-- Models -->
+    <key name="model-mode" type="s">
+      <choices><choice value="auto"/><choice value="manual"/></choices>
+      <default>'auto'</default>
+      <summary>Choose models automatically or manually</summary>
+    </key>
+    <key name="live-model" type="s">
+      <default>''</default>
+      <summary>Live model id (manual mode)</summary>
+    </key>
+    <key name="refine-model" type="s">
+      <default>''</default>
+      <summary>Correction model id (manual mode)</summary>
+    </key>
+    <key name="refine-enabled" type="b">
+      <default>true</default>
+      <summary>Correct each sentence with a second, more accurate model</summary>
+    </key>
+    <key name="model-sort" type="s">
+      <choices>
+        <choice value="recommended"/><choice value="accuracy"/><choice value="speed"/>
+        <choice value="download"/><choice value="memory"/>
+      </choices>
+      <default>'recommended'</default>
+      <summary>Model list order</summary>
+    </key>
+    <key name="vocabulary" type="as">
+      <default>[]</default>
+      <summary>Custom vocabulary: names and words to recognise</summary>
+    </key>
+    <key name="replacements" type="a{ss}">
+      <default>{}</default>
+      <summary>Always replace these heard words (key) with the value</summary>
+    </key>
+    <key name="history-mode" type="s">
+      <choices><choice value="off"/><choice value="session"/><choice value="keep"/></choices>
+      <default>'session'</default>
+      <summary>Caption history: off, this session only, or kept on disk</summary>
+    </key>
+    <key name="history-days" type="i">
+      <range min="1" max="365"/>
+      <default>30</default>
+      <summary>Days of history to keep on disk</summary>
+    </key>
+    <key name="accelerator" type="s">
+      <choices><choice value="cpu"/><choice value="intel-gpu"/><choice value="intel-npu"/><choice value="nvidia-gpu"/></choices>
+      <default>'cpu'</default>
+      <summary>Run the correction model on: cpu, intel-gpu, intel-npu or nvidia-gpu (needs its runtime pack)</summary>
+    </key>
+    <key name="profanity-filter" type="b">
+      <default>false</default>
+      <summary>Mask swear words</summary>
+    </key>
+
+    <!-- Appearance -->
+    <key name="position" type="s">
+      <choices><choice value="bottom"/><choice value="top"/><choice value="floating"/></choices>
+      <default>'bottom'</default>
+      <summary>Where the caption window starts: bottom (above the dock) or top. Dragging moves it; floating-x/y hold the dragged position.</summary>
+    </key>
+    <key name="font-size" type="i">
+      <range min="12" max="72"/>
+      <default>24</default>
+      <summary>Caption font size (px)</summary>
+    </key>
+    <key name="lines" type="i">
+      <range min="1" max="6"/>
+      <default>2</default>
+      <summary>Number of caption lines</summary>
+    </key>
+    <key name="width-percent" type="i">
+      <range min="25" max="100"/>
+      <default>50</default>
+      <summary>Caption window width (% of screen)</summary>
+    </key>
+    <key name="text-color" type="s">
+      <default>'#ffffff'</default>
+      <summary>Caption text colour</summary>
+    </key>
+    <key name="bg-color" type="s">
+      <default>'#000000'</default>
+      <summary>Caption background colour</summary>
+    </key>
+    <key name="bg-opacity" type="i">
+      <range min="0" max="100"/>
+      <default>75</default>
+      <summary>Caption background opacity (%)</summary>
+    </key>
+    <key name="dim-drafts" type="b">
+      <default>true</default>
+      <summary>Show not-yet-corrected text dimmed</summary>
+    </key>
+    <key name="floating-x" type="i">
+      <default>-1</default>
+      <summary>Floating position x (-1 = centred)</summary>
+    </key>
+    <key name="floating-y" type="i">
+      <default>-1</default>
+      <summary>Floating position y (-1 = near bottom)</summary>
+    </key>
+  </schema>
+</schemalist>

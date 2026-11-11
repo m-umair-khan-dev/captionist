@@ -1,0 +1,14 @@
+[package]
+name = "captionist"
+description = "Captionist settings window"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+captionist-core = { path = "../captionist-core" }
+anyhow.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+gtk = { package = "gtk4", version = "0.11", features = ["v4_20"] }
+adw = { package = "libadwaita", version = "0.9", features = ["v1_8"] }

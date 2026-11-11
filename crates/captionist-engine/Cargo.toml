@@ -1,0 +1,19 @@
+[package]
+name = "captionist-engine"
+description = "Captionist speech engine: capture, VAD, two-pass recognition, calibration, model downloads"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+captionist-core = { path = "../captionist-core" }
+anyhow.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sherpa-onnx.workspace = true
+ureq = "2"
+bzip2 = "0.4"
+tar = "0.4"
+flate2 = "1"
+sha2 = "0.10"
+zip = { version = "2", default-features = false, features = ["deflate"] }

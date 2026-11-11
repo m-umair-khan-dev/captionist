@@ -1,0 +1,84 @@
+.captionist-overlay {
+  padding: 10px 24px;
+}
+
+.captionist-text {
+  font-weight: 500;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
+}
+
+.captionist-status {
+  font-size: 0.9em;
+  color: #9a9996;
+}
+
+.captionist-status-ok { color: #57e389; }
+.captionist-status-warn { color: #f8e45c; }
+.captionist-status-error { color: #ff7b63; }
+
+/* Hover controls on the caption window */
+.captionist-controls {
+  spacing: 6px;
+}
+
+.captionist-button {
+  border-radius: 99px;
+  padding: 5px;
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.14);
+}
+
+.captionist-button:hover,
+.captionist-button:focus {
+  background-color: rgba(255, 255, 255, 0.28);
+}
+
+.captionist-button-icon {
+  icon-size: 14px;
+}
+
+.captionist-grip {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 -12px -4px 0;
+  padding: 2px;
+}
+
+.captionist-grip:hover {
+  color: #ffffff;
+}
+
+/* Quick menu */
+.captionist-menu-label {
+  min-width: 96px;
+}
+
+.captionist-swatches {
+  spacing: 8px;
+}
+
+.captionist-swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 99px;
+  border: 2px solid rgba(128, 128, 128, 0.6);
+}
+
+.captionist-swatch:checked {
+  border: 3px solid -st-accent-color;
+}
+
+.captionist-stepper {
+  spacing: 10px;
+}
+
+.captionist-step {
+  min-width: 28px;
+  padding: 2px 8px;
+  border-radius: 99px;
+}
+
+.captionist-step-value {
+  min-width: 20px;
+  text-align: center;
+}

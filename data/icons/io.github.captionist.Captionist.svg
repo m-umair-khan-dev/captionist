@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- Captionist app icon ("D3 · Ink on paper"): a sound wave turning into
+       caption lines; the last line is a dimmed draft with a gold cursor. -->
+  <rect x="8" y="16" width="112" height="104" rx="26" fill="#c0bfbc"/>
+  <rect x="8" y="8" width="112" height="104" rx="26" fill="#f6f5f4"/>
+  <rect x="22" y="50" width="7" height="20" rx="3.5" fill="#241f31"/>
+  <rect x="33" y="38" width="7" height="44" rx="3.5" fill="#241f31"/>
+  <rect x="44" y="45" width="7" height="30" rx="3.5" fill="#241f31"/>
+  <rect x="58" y="42" width="48" height="9" rx="4.5" fill="#241f31"/>
+  <rect x="58" y="56" width="38" height="9" rx="4.5" fill="#241f31"/>
+  <rect x="58" y="70" width="24" height="9" rx="4.5" fill="#241f31" opacity="0.4"/>
+  <rect x="87" y="67" width="4" height="15" rx="2" fill="#e5a50a"/>
+</svg>

@@ -1,0 +1,3 @@
+# Binaries find libsherpa-onnx-c-api.so and libonnxruntime.so next to themselves.
+[target.x86_64-unknown-linux-gnu]
+rustflags = ["-C", "link-arg=-Wl,-rpath,$ORIGIN"]

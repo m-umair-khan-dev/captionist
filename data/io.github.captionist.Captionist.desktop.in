@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Captionist
+GenericName=Live Captions
+Comment=Real-time, private live captions for anything you hear
+Exec=@BINDIR@/captionist
+Icon=io.github.captionist.Captionist
+Categories=Utility;Accessibility;GTK;GNOME;
+Keywords=captions;subtitles;transcription;speech;accessibility;deaf;hearing;
+StartupNotify=true
+DBusActivatable=false

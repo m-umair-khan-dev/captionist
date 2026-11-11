@@ -1,0 +1,96 @@
+name: Release
+
+# How releases work (details: docs/RELEASING.md):
+# 1. Every push to main updates a "chore(main): release X.Y.Z" pull request
+#    (version bump in Cargo.toml + CHANGELOG.md from commit messages).
+# 2. Merging that PR creates tag vX.Y.Z and a GitHub Release.
+# 3. This workflow then builds the .deb, attaches it with a checksum, and
+#    publishes it to the signed APT repository on GitHub Pages, so users get
+#    it with their normal system updates.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing tag to (re)package and publish, e.g. v0.1.0
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    outputs:
+      created: ${{ steps.rp.outputs.release_created }}
+      tag: ${{ steps.rp.outputs.tag_name }}
+    steps:
+      - id: rp
+        uses: googleapis/release-please-action@v4
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  package:
+    needs: release-please
+    if: always() && (needs.release-please.outputs.created == 'true' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ needs.release-please.outputs.tag || inputs.tag }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Opt-in crash reports: only release builds know where to send them.
+      CAPTIONIST_SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+      - uses: ./.github/actions/build
+        with:
+          test: "false"
+      - name: Attach .deb and checksum to the release
+        run: |
+          gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --title "Captionist ${TAG#v}" --notes-file CHANGELOG.md
+          cd dist && sha256sum *.deb > SHA256SUMS && cd ..
+          gh release upload "$TAG" dist/*.deb dist/SHA256SUMS --clobber
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-deb
+          path: dist/*.deb
+
+  apt:
+    needs: package
+    if: always() && needs.package.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-deb
+          path: incoming
+      - name: Check out the APT repository (gh-pages branch)
+        run: |
+          git fetch origin gh-pages:gh-pages 2>/dev/null || true
+          if git show-ref --quiet refs/heads/gh-pages; then
+            git worktree add site gh-pages
+          else
+            git worktree add --detach site && cd site && git checkout --orphan gh-pages && git rm -rfq . && cd ..
+          fi
+      - name: Add the package and sign the repository
+        env:
+          APT_SIGNING_KEY: ${{ secrets.APT_SIGNING_KEY }}
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq apt-utils
+          echo "$APT_SIGNING_KEY" | gpg --batch --import
+          scripts/apt-repo/publish.sh site/apt incoming/*.deb
+          cp packaging/apt/captionist.asc site/apt/captionist.asc
+      - name: Publish
+        run: |
+          cd site
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          touch .nojekyll
+          git add -A && git commit -qm "apt: publish $(ls ../incoming)" && git push origin gh-pages
