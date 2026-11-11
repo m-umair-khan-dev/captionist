@@ -1,0 +1,39 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Architectures: amd64
+Codename: stable
+Components: main
+Date: Wed, 11 Nov 2026 18:00:00 +0000
+Description: Captionist live captions for Linux
+Label: Captionist
+Origin: Captionist
+Suite: stable
+MD5Sum:
+ 12199858791f63c30a575b57cca63ba1             1245 main/binary-amd64/Packages
+ a888fe9b852bfabb616b2ed5ce835b32              824 main/binary-amd64/Packages.gz
+SHA1:
+ 5fe00d8b72d6b417e90e80f3219bc1d597981ba4             1245 main/binary-amd64/Packages
+ 8c21561c8087563e1a64eb285ceaafe88401c213              824 main/binary-amd64/Packages.gz
+SHA256:
+ 2e90d085a4fde0d75131db90695113d1e36e87158dce394ed570a8a1613dcbe6             1245 main/binary-amd64/Packages
+ 7ac42cb06364af758569b4055bd0e162c379d32a669d5b92742ee8f41a0ad992              824 main/binary-amd64/Packages.gz
+SHA512:
+ 51d5274aff7bcffc83ab31c09c9ffcbe3175eac814d6df7d59437a91c78f6d56bbddf286775cb7b64824d453a6ddb1883d015a9a26589022a30ec8d350ab0356             1245 main/binary-amd64/Packages
+ 8bb05e09a60ceecd7315b4e04b56fa026618a9972f5d4f3953416f872924b62068643727a2bfd2d53d3de294160a4cecb677b58a381e5de980e499f1b070b73f              824 main/binary-amd64/Packages.gz
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEE3ntjjy2RzR9W67tsQqrwl+Li01IFAmr0rSAACgkQQqrwl+Li
+01IAKhAAnOfGBac8E1InnpNfOt6GhnU7aFfURvI2vo9WBSa8e4g6GKg+YED/4Qhj
+yGuZROBU3Ur2LloxNh2yqXsHcdYPjdTgVjm/na3FDqSCUjZUD5gmvfkpq/61grdS
+VZnVFOV9Yv1ReCB2LSev3buFKLZmvZK7aKPdQX4S4I9fum+/+5pPJSQlJE6dT5xh
+XT1DJ2dJ3SsXf40k6umPon1CEtw4WxY+/0fwE+y8DQj3CFGMJIwseUzaUbRjDIYJ
+fmPkrhaoQJf3gzGZgY1p9LnOc3z7EW9062bSFyELZ8SyDtd54Wf/h+omNrEewug6
+YXyE2/dKKoXWRBwL/mkjFsZaBMBPFn5+VsFDkjjyVsXsJOUjzsR3EJjfl4HS7pdW
+aAJQyg2llWZivvADGtGGAsgG7hWBwWeIHJ2oQy80Z2DVJ0rpT4qIgF2EAKaQEUHU
+5Xddqm4I8CZgtP4V0i+pJNu2xFBxgVKTecdkD4+udSpev7/TlOQCTtM/QUF7SEbB
+FUn1OFOLyQU4Zkg5RQD1wQ8zSVSfhu1jzfCBtdi0sJynwDiooT31LCEGOlCTfau2
+HYuxf7nzPpThmt+GXNeb9GBzjBGeQP6bKhq2CUCLjEIMMJVt3l8wW/DrEKIM/ptZ
+JM+riPdExzUAWRW4tg9izMPgCQ7VaFSuY/Pi2xiG6z9w/xsNhkk=
+=ad1a
+-----END PGP SIGNATURE-----

@@ -1,0 +1,25 @@
+Package: captionist
+Architecture: amd64
+Version: 0.1.0
+Priority: optional
+Section: gnome
+Maintainer: m-umair-khan-dev <m-umair-khan-dev@users.noreply.github.com>
+Installed-Size: 37436
+Depends: libc6 (>= 2.39), libstdc++6, libgtk-4-1 (>= 4.20), libadwaita-1-0 (>= 1.8), pipewire-bin, gnome-shell (>= 51)
+Conflicts: hearline
+Replaces: hearline
+Filename: pool/main/c/captionist/captionist_0.1.0_amd64.deb
+Size: 12110914
+MD5sum: 407501e35d6daf6643eb9469784e17c0
+SHA1: ee8a75d2d33ca89bf1af5b234b0e70eef598da25
+SHA256: eb0d3f6196665de0e07724f666a0e0909ac388e870f01beed168f1483f549c6c
+SHA512: 1bfdf020aa501f73815175a7ea828cdfad5fd049e5e4d3510e6d04aee7ee882d3ce241a47428250e35686348ab3dfff3b2d0de672d15e5d8932bb4568e84a9eb
+Homepage: https://github.com/m-umair-khan-dev/captionist
+Description: Real-time, private live captions for the Linux desktop
+ Captionist captions anything you hear (videos, calls, meetings) or your
+ microphone, fully on-device. A fast streaming model shows text as people
+ speak; a more accurate model corrects each sentence when it ends.
+ Includes a GNOME Shell extension (caption overlay, top-bar icon, Quick
+ Settings toggle) and a settings window. Speech models are downloaded on
+ demand after checking what this PC can run.
+
