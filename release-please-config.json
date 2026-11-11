@@ -8,8 +8,12 @@
       "changelog-path": "CHANGELOG.md",
       "bump-minor-pre-major": true,
       "extra-files": [
-        { "type": "generic", "path": "Cargo.toml" }
+        {
+          "type": "generic",
+          "path": "Cargo.toml"
+        }
       ]
     }
-  }
+  },
+  "include-component-in-tag": false
 }

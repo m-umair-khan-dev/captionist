@@ -21,6 +21,9 @@ gh repo edit "$REPO" \
 echo "==> Squash commits use the PR title (it becomes the changelog entry)"
 gh api -X PATCH "repos/$REPO" -f squash_merge_commit_title=PR_TITLE -f squash_merge_commit_message=PR_BODY >/dev/null
 
+echo "==> Let workflows open release pull requests (release-please)"
+gh api -X PUT "repos/$REPO/actions/permissions/workflow" -f default_workflow_permissions=read -F can_approve_pull_request_reviews=true >/dev/null
+
 echo "==> Private vulnerability reporting"
 gh api -X PUT "repos/$REPO/private-vulnerability-reporting" >/dev/null
 
