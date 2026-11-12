@@ -6,7 +6,7 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::fs;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -81,13 +81,16 @@ impl HardwareReport {
     pub fn probe() -> Self {
         let cpu = probe_cpu();
         let memory = probe_memory();
-        let gpus = probe_gpus();
+        let libs = Libraries::find();
+        let gpus = probe_gpus(&libs);
         let npus = probe_npus();
         let on_battery = probe_on_battery();
         let fingerprint = fingerprint(&cpu, &memory, &gpus, &npus);
-        let cuda_major = if lib_exists(&["libcublasLt.so.13", "libcudart.so.13"]) {
+        // Only a complete set counts: ONNX Runtime's CUDA provider fails to load
+        // if any one of these is missing.
+        let cuda_major = if libs.all(CUDA13_LIBS) {
             Some(13)
-        } else if lib_exists(&["libcublasLt.so.12", "libcudart.so.12"]) {
+        } else if libs.all(CUDA12_LIBS) {
             Some(12)
         } else {
             None
@@ -99,8 +102,8 @@ impl HardwareReport {
             npus,
             on_battery,
             cuda_major,
-            cudnn: lib_exists(&["libcudnn.so.9"]),
-            npu_runtime: lib_exists(&["libze_intel_vpu.so.1", "libnpu_driver_compiler.so"]),
+            cudnn: libs.any(&["libcudnn.so.9"]),
+            npu_runtime: libs.any(&["libze_intel_vpu.so.1", "libnpu_driver_compiler.so"]),
             fingerprint,
         }
     }
@@ -267,19 +270,90 @@ fn probe_memory() -> MemoryInfo {
     }
 }
 
-fn lib_exists(names: &[&str]) -> bool {
-    const DIRS: &[&str] = &[
-        "/usr/lib/x86_64-linux-gnu",
-        "/usr/lib64",
-        "/usr/lib",
-        "/usr/lib/x86_64-linux-gnu/intel-opencl",
-        "/opt/rocm/lib",
-        "/usr/local/cuda/lib64",
-        "/usr/local/cuda/targets/x86_64-linux/lib",
-        "/usr/lib/x86_64-linux-gnu/nvidia/current",
-    ];
-    DIRS.iter()
-        .any(|d| names.iter().any(|n| Path::new(d).join(n).exists()))
+/// CUDA libraries ONNX Runtime's CUDA provider links against, per CUDA major version.
+const CUDA13_LIBS: &[&str] = &[
+    "libcudart.so.13",
+    "libcublas.so.13",
+    "libcublasLt.so.13",
+    "libcufft.so.12",
+    "libcurand.so.10",
+];
+const CUDA12_LIBS: &[&str] = &[
+    "libcudart.so.12",
+    "libcublas.so.12",
+    "libcublasLt.so.12",
+    "libcufft.so.11",
+    "libcurand.so.10",
+];
+
+/// Folders checked besides what the system's library loader already knows.
+const LIB_DIRS: &[&str] = &[
+    "/usr/lib/x86_64-linux-gnu",
+    "/usr/lib64",
+    "/usr/lib",
+    "/usr/lib/x86_64-linux-gnu/intel-opencl",
+    "/opt/rocm/lib",
+    "/usr/lib/x86_64-linux-gnu/nvidia/current",
+];
+
+/// Library folders of CUDA toolkits installed under `/usr/local` (`cuda` and
+/// versioned `cuda-X.Y` installs, newest version first). NVIDIA's installers
+/// don't always register these with the system's library loader.
+pub fn cuda_lib_dirs() -> Vec<PathBuf> {
+    let mut roots: Vec<PathBuf> = fs::read_dir("/usr/local")
+        .into_iter()
+        .flatten()
+        .flatten()
+        .map(|e| e.path())
+        .filter(|p| {
+            p.file_name()
+                .and_then(|n| n.to_str())
+                .is_some_and(|n| n == "cuda" || n.starts_with("cuda-"))
+        })
+        .collect();
+    roots.sort_by(|a, b| b.cmp(a));
+    roots
+        .iter()
+        .flat_map(|r| [r.join("targets/x86_64-linux/lib"), r.join("lib64")])
+        .filter(|d| d.is_dir())
+        .collect()
+}
+
+/// Names of the shared libraries on this PC: everything the system's library
+/// loader knows (`ldconfig -p`) plus the folders above and CUDA toolkit folders.
+struct Libraries(HashSet<String>);
+
+impl Libraries {
+    fn find() -> Self {
+        let mut names = HashSet::new();
+        for ldconfig in ["/usr/sbin/ldconfig", "/sbin/ldconfig", "ldconfig"] {
+            let Ok(out) = Command::new(ldconfig).arg("-p").output() else {
+                continue;
+            };
+            // Lines look like: "\tlibcudart.so.13 (libc6,x86-64) => /path/libcudart.so.13"
+            for line in String::from_utf8_lossy(&out.stdout).lines().skip(1) {
+                if let Some(name) = line.split_whitespace().next() {
+                    names.insert(name.to_string());
+                }
+            }
+            break;
+        }
+        let dirs = LIB_DIRS.iter().map(PathBuf::from).chain(cuda_lib_dirs());
+        for dir in dirs {
+            for e in fs::read_dir(dir).into_iter().flatten().flatten() {
+                names.insert(e.file_name().to_string_lossy().into_owned());
+            }
+        }
+        Libraries(names)
+    }
+
+    fn any(&self, names: &[&str]) -> bool {
+        names.iter().any(|n| self.0.contains(*n))
+    }
+
+    fn all(&self, names: &[&str]) -> bool {
+        names.iter().all(|n| self.0.contains(*n))
+    }
 }
 
 fn lspci_name(slot: &str) -> Option<String> {
@@ -310,7 +384,7 @@ fn nvidia_vram_mb() -> Option<u64> {
         .ok()
 }
 
-fn probe_gpus() -> Vec<GpuInfo> {
+fn probe_gpus(libs: &Libraries) -> Vec<GpuInfo> {
     let mut gpus = vec![];
     let Ok(entries) = fs::read_dir("/sys/class/drm") else {
         return gpus;
@@ -369,9 +443,9 @@ fn probe_gpus() -> Vec<GpuInfo> {
             GpuVendor::Other => true,
         };
         let compute_runtime = match vendor {
-            GpuVendor::Intel => lib_exists(&["libze_intel_gpu.so.1", "libigdrcl.so"]),
-            GpuVendor::Nvidia => lib_exists(&["libcuda.so.1"]),
-            GpuVendor::Amd => lib_exists(&["libamdhip64.so", "libMIOpen.so.1"]),
+            GpuVendor::Intel => libs.any(&["libze_intel_gpu.so.1", "libigdrcl.so"]),
+            GpuVendor::Nvidia => libs.any(&["libcuda.so.1"]),
+            GpuVendor::Amd => libs.any(&["libamdhip64.so", "libMIOpen.so.1"]),
             GpuVendor::Other => false,
         };
         gpus.push(GpuInfo {

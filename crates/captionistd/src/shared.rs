@@ -228,8 +228,10 @@ impl Shared {
         }
     }
 
-    /// Times the installed correction models on the active accelerator. Blocking.
-    pub fn measure_accel_all(&self) -> anyhow::Result<()> {
+    /// Times installed correction models on the active accelerator (all of
+    /// them, or only those not tested on it yet). Blocking. A model runs on
+    /// the accelerator only after passing this test.
+    pub fn measure_accel(&self, only_untested: bool) -> anyhow::Result<()> {
         let Some(kind) = accel::active() else {
             return Ok(());
         };
@@ -239,8 +241,12 @@ impl Shared {
             .catalog
             .by_role(captionist_core::catalog::Role::Refine)
             .filter(|m| self.is_installed(m))
+            .filter(|m| !only_untested || !self.tested_on_accel(&m.id, kind))
             .cloned()
             .collect();
+        if models.is_empty() {
+            return Ok(());
+        }
         for m in models {
             // Make sure the processor result exists for comparison.
             if !self
@@ -272,13 +278,29 @@ impl Shared {
             .any(|r| r.model_id == id && r.provider == label && r.failed.is_none())
     }
 
-    pub fn has_accel_results(&self, kind: captionist_core::accel::Kind) -> bool {
+    /// Whether model `id` has a result (pass or fail) on accelerator `kind`.
+    fn tested_on_accel(&self, id: &str, kind: captionist_core::accel::Kind) -> bool {
         let label = captionist_core::accel::result_label(kind);
         self.measured
             .lock()
             .unwrap()
             .iter()
-            .any(|r| r.provider == label)
+            .any(|r| r.model_id == id && r.provider == label)
+    }
+
+    /// Tests correction models not yet tried on the active accelerator, e.g.
+    /// one downloaded after the accelerator was turned on. Errors are reported
+    /// here, so a failed test never fails the download that triggered it.
+    pub fn test_new_models_on_accel(&self) {
+        let Some(kind) = accel::active() else {
+            return;
+        };
+        if let Err(e) = self.measure_accel(true) {
+            eprintln!("accelerator speed test failed: {e:#}");
+            self.reporter
+                .error("accelerator", &format!("{} test: {e:#}", kind.label()));
+            self.emit("Error", &(format!("{} test failed: {e:#}", kind.label()),));
+        }
     }
 
     fn set_busy(&self, msg: Option<String>) {
@@ -430,7 +452,7 @@ impl Shared {
             for m in others {
                 self.measure(&m)?;
             }
-            self.measure_accel_all()?;
+            self.measure_accel(false)?;
         }
         self.send(Cmd::Apply);
         Ok(())
