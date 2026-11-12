@@ -105,8 +105,17 @@ impl Controller {
         };
         let source = self.settings.string("source").to_string();
         let app = self.settings.string("source-app").to_string();
+        // Only models that passed a test on the accelerator run there.
+        let refine_provider = match (accel::active(), refine.as_ref()) {
+            (Some(k), Some(m)) if shared.runs_on_accel(&m.id) => {
+                accel::provider(k).unwrap_or_else(|_| "cpu".into())
+            }
+            _ => "cpu".into(),
+        };
+        // Includes where correction runs, so a model that just passed its
+        // accelerator test moves onto the accelerator right away.
         let key = format!(
-            "{}|{:?}|{source}|{app}",
+            "{}|{:?}|{refine_provider}|{source}|{app}",
             live.id,
             refine.as_ref().map(|m| &m.id)
         );
@@ -132,13 +141,7 @@ impl Controller {
             threads: shared.hw.lock().unwrap().threads_per_pass(),
             source: Source::parse(&source, &app),
             post: shared.post.clone(),
-            // Only models that passed a test on the accelerator run there.
-            refine_provider: match (accel::active(), refine.as_ref()) {
-                (Some(k), Some(m)) if shared.runs_on_accel(&m.id) => {
-                    accel::provider(k).unwrap_or_else(|_| "cpu".into())
-                }
-                _ => "cpu".into(),
-            },
+            refine_provider,
         };
         let (ln, rn) = (live.name.clone(), refine.as_ref().map(|m| m.name.clone()));
         shared.set_status(
@@ -285,8 +288,7 @@ fn select_runtime(settings: &gio::Settings) {
     cmd.args(std::env::args_os().skip(1));
     match want {
         Some((kind, pack)) => {
-            let dir = accel::pack_dir(pack.id);
-            cmd.env("LD_LIBRARY_PATH", dir)
+            cmd.env("LD_LIBRARY_PATH", accel::library_path(kind, &pack))
                 .env(accel::ENV_ACTIVE, kind.id());
         }
         None => {
@@ -390,15 +392,10 @@ fn main() -> Result<()> {
             }
         });
     }
-    // First start on an accelerator: time the correction models on it.
-    if let Some(kind) = accel::active().filter(|k| !shared.has_accel_results(*k)) {
+    // On an accelerator: time any correction model not yet tested on it.
+    if accel::active().is_some() {
         let s = shared.clone();
-        std::thread::spawn(move || {
-            if let Err(e) = s.measure_accel_all() {
-                eprintln!("accelerator speed test failed: {e:#}");
-                s.emit("Error", &(format!("{} test failed: {e:#}", kind.label()),));
-            }
-        });
+        std::thread::spawn(move || s.test_new_models_on_accel());
     }
     ctl.borrow().update_post();
     ctl.borrow().update_history();

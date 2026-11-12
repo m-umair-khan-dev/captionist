@@ -208,6 +208,7 @@ impl Service {
             s.ensure_downloaded(&m)?;
             s.measure(&m)?;
             s.send(crate::shared::Cmd::Apply);
+            s.test_new_models_on_accel();
             Ok(())
         });
         Ok(())
@@ -226,6 +227,7 @@ impl Service {
                 }
             }
             s.send(crate::shared::Cmd::Apply);
+            s.test_new_models_on_accel();
             Ok(())
         });
     }

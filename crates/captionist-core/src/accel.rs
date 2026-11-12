@@ -54,8 +54,10 @@ pub struct Pack {
     pub url: &'static str,
     pub sha256: &'static str,
     pub download_mb: u32,
-    /// Path prefix of the libraries inside the archive.
-    pub lib_prefix: &'static str,
+    /// Folder holding the libraries inside the archive, below any top-level
+    /// folder (whose name isn't relied on: Microsoft's CUDA 13 archive unpacks
+    /// into the same folder name as the CUDA 12 one).
+    pub lib_dir: &'static str,
     pub archive: Archive,
 }
 
@@ -73,7 +75,7 @@ pub const OPENVINO: Pack = Pack {
     url: "https://files.pythonhosted.org/packages/50/cf/17ba72de2df0fcba349937d2788f154397bbc2d1a2d67772a97e26f6bc5f/onnxruntime_openvino-1.24.1-cp312-cp312-manylinux_2_28_x86_64.whl",
     sha256: "d617fac2f59a6ab5ea59a788c3e1592240a129642519aaeaa774761dfe35150e",
     download_mb: 81,
-    lib_prefix: "onnxruntime/capi/",
+    lib_dir: "onnxruntime/capi",
     archive: Archive::Wheel,
 };
 
@@ -83,7 +85,7 @@ pub const CUDA12: Pack = Pack {
     url: "https://github.com/microsoft/onnxruntime/releases/download/v1.24.1/onnxruntime-linux-x64-gpu-1.24.1.tgz",
     sha256: "1c468821456b7863640555e31ee5b71e56bb959874b9db0dbf79503997993673",
     download_mb: 195,
-    lib_prefix: "onnxruntime-linux-x64-gpu-1.24.1/lib/",
+    lib_dir: "lib",
     archive: Archive::TarGz,
 };
 
@@ -93,7 +95,7 @@ pub const CUDA13: Pack = Pack {
     url: "https://github.com/microsoft/onnxruntime/releases/download/v1.24.1/onnxruntime-linux-x64-gpu_cuda13-1.24.1.tgz",
     sha256: "30aaf9b1046aab7ed976dca09ca64c11da5385871a0d2b9aa00e2817f2416f1e",
     download_mb: 171,
-    lib_prefix: "onnxruntime-linux-x64-gpu_cuda13-1.24.1/lib/",
+    lib_dir: "lib",
     archive: Archive::TarGz,
 };
 
