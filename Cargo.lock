@@ -256,7 +256,7 @@ dependencies = [
 
 [[package]]
 name = "captionist"
-version = "0.1.0"
+version = "0.1.2"
 dependencies = [
  "anyhow",
  "captionist-core",
@@ -268,7 +268,7 @@ dependencies = [
 
 [[package]]
 name = "captionist-bench"
-version = "0.1.0"
+version = "0.1.2"
 dependencies = [
  "anyhow",
  "captionist-core",
@@ -281,7 +281,7 @@ dependencies = [
 
 [[package]]
 name = "captionist-core"
-version = "0.1.0"
+version = "0.1.2"
 dependencies = [
  "anyhow",
  "serde",
@@ -291,7 +291,7 @@ dependencies = [
 
 [[package]]
 name = "captionist-engine"
-version = "0.1.0"
+version = "0.1.2"
 dependencies = [
  "anyhow",
  "bzip2 0.6.1",
@@ -308,7 +308,7 @@ dependencies = [
 
 [[package]]
 name = "captionistd"
-version = "0.1.0"
+version = "0.1.2"
 dependencies = [
  "anyhow",
  "captionist-core",

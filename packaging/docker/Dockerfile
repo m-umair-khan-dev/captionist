@@ -1,7 +1,9 @@
-# Build image for Captionist: Ubuntu 26.10 (same GTK/libadwaita/glibc as the
-# target desktop) + the Rust toolchain copied from the devcontainer image.
+# Build image for Captionist: Ubuntu 24.04 LTS, the oldest supported release,
+# so one .deb runs on 24.04 and everything newer (programs built against older
+# glibc/GTK run on newer ones, not the other way round), + the Rust toolchain
+# copied from the devcontainer image.
 FROM mcr.microsoft.com/devcontainers/rust:1-bookworm AS rust
-FROM ubuntu:26.10
+FROM ubuntu:24.04
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
       build-essential pkg-config ca-certificates curl \
       libgtk-4-dev libadwaita-1-dev libglib2.0-dev-bin dpkg-dev cmake git \

@@ -2,7 +2,7 @@
   "uuid": "captionist@m-umair-khan-dev.github.io",
   "name": "Captionist Live Captions",
   "description": "Real-time, private, on-device live captions for anything you hear. Requires the Captionist app.",
-  "shell-version": ["50", "51"],
+  "shell-version": ["46", "50", "51"],
   "settings-schema": "io.github.m_umair_khan_dev.Captionist",
   "url": "https://github.com/m-umair-khan-dev/captionist",
   "version-name": "0.1.0"

@@ -26,6 +26,25 @@ jobs:
           path: dist/*.deb
           retention-days: 14
 
+  compat:
+    name: Works on Ubuntu ${{ matrix.ubuntu }}
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ubuntu: ["24.04", "26.04", "26.10"]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v7
+        with:
+          name: captionist-deb
+          path: dist
+      # Install, libraries, caption service and the extension in GNOME Shell.
+      # (The live-caption check needs downloaded speech models, so it runs locally only.)
+      - name: Install and test the .deb
+        run: DEB=$(ls dist/captionist_*_amd64.deb) scripts/compat-test.sh ${{ matrix.ubuntu }}
+
   audit:
     name: Dependency security audit
     runs-on: ubuntu-latest
