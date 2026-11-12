@@ -1,0 +1,1 @@
+{"uuid": "captest@local", "name": "Captionist test helper", "description": "Reports Captionist's state for the compatibility test.", "shell-version": ["46", "47", "48", "49", "50", "51"]}

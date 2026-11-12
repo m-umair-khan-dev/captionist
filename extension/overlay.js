@@ -6,6 +6,7 @@ import GLib from 'gi://GLib';
 import St from 'gi://St';
 import Clutter from 'gi://Clutter';
 import Pango from 'gi://Pango';
+import Meta from 'gi://Meta';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
@@ -20,6 +21,23 @@ const MARGIN = 24;
 const EDGE = 10;
 /** Actor names of the docks the caption box keeps clear of (Ubuntu Dock and Dash to Dock). */
 const DOCK_NAMES = ['dashtodockContainer'];
+
+/** Cursor names → enum member names, newest first (names differ between GNOME versions). */
+const CURSORS = {
+    'default': ['DEFAULT'],
+    'move': ['MOVE', 'MOVE_OR_RESIZE_WINDOW'],
+    'nw-resize': ['NW_RESIZE'],
+    'ne-resize': ['NE_RESIZE'],
+    'sw-resize': ['SW_RESIZE'],
+    'se-resize': ['SE_RESIZE'],
+    'ew-resize': ['EW_RESIZE', 'EAST_RESIZE'],
+    'ns-resize': ['NS_RESIZE', 'SOUTH_RESIZE'],
+};
+
+function cursorValue(cursorEnum, name) {
+    const key = CURSORS[name].find(k => k in cursorEnum);
+    return cursorEnum[key ?? 'DEFAULT'];
+}
 const MIN_WIDTH = 280;
 const STYLE_KEYS = [
     'font-size', 'lines', 'width-percent', 'text-color',
@@ -374,16 +392,26 @@ export class CaptionOverlay {
     }
 
     _cursorFor(e) {
-        const C = Clutter.CursorType;
         if ((e.top && e.left) || (e.bottom && e.right))
-            return e.top ? C.NW_RESIZE : C.SE_RESIZE;
+            return e.top ? 'nw-resize' : 'se-resize';
         if ((e.top && e.right) || (e.bottom && e.left))
-            return e.top ? C.NE_RESIZE : C.SW_RESIZE;
+            return e.top ? 'ne-resize' : 'sw-resize';
         if (e.left || e.right)
-            return C.EW_RESIZE;
+            return 'ew-resize';
         if (e.top || e.bottom)
-            return C.NS_RESIZE;
-        return C.MOVE;
+            return 'ns-resize';
+        return 'move';
+    }
+
+    /**
+     * Sets the pointer shape over the box. GNOME 48+ sets it per actor
+     * (set_cursor_type); older GNOME (46/47) only has a global cursor.
+     */
+    _setCursor(name) {
+        if (typeof this._box.set_cursor_type === 'function' && Clutter.CursorType)
+            this._box.set_cursor_type(cursorValue(Clutter.CursorType, name));
+        else
+            global.display.set_cursor(cursorValue(Meta.Cursor, name));
     }
 
     /**
@@ -448,14 +476,14 @@ export class CaptionOverlay {
             if (isOwn(event)) {
                 const [, lx, ly] = this._box.transform_stage_point(sx, sy);
                 const onGrip = this._controls?.isGrip(global.stage.get_event_actor(event));
-                this._box.set_cursor_type(onGrip ? Clutter.CursorType.SE_RESIZE : this._cursorFor(this._edgesAt(lx, ly)));
+                this._setCursor(onGrip ? 'se-resize' : this._cursorFor(this._edgesAt(lx, ly)));
             }
             return Clutter.EVENT_PROPAGATE;
         });
 
         this._box.connect('leave-event', () => {
             if (!this._drag && !this._resize)
-                this._box.set_cursor_type(Clutter.CursorType.DEFAULT);
+                this._setCursor('default');
             return Clutter.EVENT_PROPAGATE;
         });
 

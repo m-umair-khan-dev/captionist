@@ -23,7 +23,7 @@ scripts/cargo-docker.sh build --release  # Rust workspace → target/release/
 scripts/cargo-docker.sh test --release
 ```
 
-`cargo-docker.sh` runs `cargo` in the `captionist-build` image ([packaging/docker/Dockerfile](../packaging/docker/Dockerfile): Ubuntu 26.10 with GTK/libadwaita dev files and the Rust toolchain), with the project mounted at the same path and a `captionist-cargo` volume for the crate cache. Binaries in `target/release/` run directly on the host.
+`cargo-docker.sh` runs `cargo` in the `captionist-build` image ([packaging/docker/Dockerfile](../packaging/docker/Dockerfile): Ubuntu 24.04 LTS with GTK/libadwaita dev files and the Rust toolchain; the oldest supported release, so the same build runs on newer Ubuntu), with the project mounted at the same path and a `captionist-cargo` volume for the crate cache. Binaries in `target/release/` run directly on the host.
 
 sherpa-onnx and ONNX Runtime are **shared libraries** installed next to `captionistd` (found via `$ORIGIN`). That lets a vendor build of the same ONNX Runtime version (Intel OpenVINO, NVIDIA CUDA) be swapped in at load time for hardware acceleration.
 
@@ -34,6 +34,23 @@ scripts/build-deb.sh                # → dist/captionist_<ver>_amd64.deb; sudo 
 scripts/install-local.sh            # or a per-user install into ~/.local (no sudo); log out/in once
 scripts/uninstall-local.sh [--purge]
 ```
+
+## Supported Ubuntu releases
+
+One `.deb` supports Ubuntu 24.04 LTS (GNOME 46), 26.04 LTS (GNOME 50) and 26.10 (GNOME 51). It's built on the oldest one, and code that differs between releases checks what's available at run time instead of assuming the newest:
+
+- **PipeWire:** `pw-record --raw` exists only in newer PipeWire. PipeWire 1.0 (24.04) rejects it but already writes plain samples to stdout ([capture.rs](../crates/captionist-engine/src/capture.rs)).
+- **Pointer shape over the caption box:** GNOME 48+ sets it per actor (`set_cursor_type`); GNOME 46/47 only have the global cursor ([overlay.js](../extension/overlay.js)).
+- **Settings window:** built against GTK 4.14 / libadwaita 1.5 APIs only, which newer GTK runs unchanged.
+
+To check a `.deb` on each release (CI runs the same test on every PR):
+
+```sh
+scripts/compat-test.sh              # Ubuntu 24.04, 26.04 and 26.10
+scripts/compat-test.sh 24.04        # just one
+```
+
+Each run installs the package in a fresh container and checks the libraries, the caption service over D-Bus, live captions from a virtual speaker (when speech models are downloaded on this PC; CI skips this) and the extension inside a real GNOME Shell with the Ubuntu Dock: top-bar icon, Quick Settings toggle, caption box, pointer shape and the box staying clear of the dock.
 
 ## Speed and accuracy tests
 

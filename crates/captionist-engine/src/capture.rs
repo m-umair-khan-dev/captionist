@@ -11,7 +11,7 @@ use std::io::Read;
 use std::process::{Child, Command, Stdio};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::{self, Receiver, Sender};
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex, OnceLock};
 use std::thread;
 use std::time::Duration;
 
@@ -100,6 +100,27 @@ fn app_stream_serials(app: &str) -> Vec<u64> {
         .collect()
 }
 
+/// Whether this `pw-record` needs `--raw` to write plain samples to stdout.
+/// PipeWire 1.2+ has the option; 1.0 (Ubuntu 24.04) doesn't, rejects it, and
+/// already writes plain samples when the output is `-`.
+fn pw_record_has_raw() -> bool {
+    static HAS_RAW: OnceLock<bool> = OnceLock::new();
+    *HAS_RAW.get_or_init(|| {
+        Command::new("pw-record")
+            .arg("--help")
+            .stdin(Stdio::null())
+            .output()
+            .map(|o| help_mentions_raw(&o.stdout) || help_mentions_raw(&o.stderr))
+            .unwrap_or(true)
+    })
+}
+
+fn help_mentions_raw(help: &[u8]) -> bool {
+    String::from_utf8_lossy(help)
+        .split_whitespace()
+        .any(|w| w == "--raw")
+}
+
 /// 50 ms of audio at 16 kHz.
 const READ_SAMPLES: usize = 800;
 
@@ -119,18 +140,11 @@ fn spawn(target: &Target) -> Result<Child> {
     if let Target::Stream(serial) = target {
         cmd.args(["--target", &serial.to_string()]);
     }
-    cmd.args([
-        "--rate",
-        "16000",
-        "--channels",
-        "1",
-        "--format",
-        "f32",
-        "--raw",
-        "--latency",
-        "50ms",
-        "-",
-    ]);
+    cmd.args(["--rate", "16000", "--channels", "1", "--format", "f32"]);
+    if pw_record_has_raw() {
+        cmd.arg("--raw");
+    }
+    cmd.args(["--latency", "50ms", "-"]);
     cmd.stdout(Stdio::piped())
         .stderr(Stdio::null())
         .stdin(Stdio::null());
@@ -297,5 +311,19 @@ impl Capture {
                 }
             }
         });
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::help_mentions_raw;
+
+    #[test]
+    fn detects_raw_option_in_help() {
+        // PipeWire 1.4 (Ubuntu 26.04+) lists the option; 1.0 (Ubuntu 24.04) doesn't.
+        assert!(help_mentions_raw(b"  -a, --raw                 RAW mode\n"));
+        assert!(!help_mentions_raw(
+            b"      --latency    Set node latency\n  -P  --properties  Set node properties\n"
+        ));
     }
 }
