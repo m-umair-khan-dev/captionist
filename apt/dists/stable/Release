@@ -1,24 +1,24 @@
 Architectures: amd64
 Codename: stable
 Components: main
-Date: Thu, 12 Nov 2026 06:37:48 +0000
+Date: Thu, 12 Nov 2026 15:01:27 +0000
 Description: Captionist live captions for Linux
 Label: Captionist
 Origin: Captionist
 Suite: stable
 MD5Sum:
- f3a709f08eeb8e17fc8af5ee5ad8b511             1502 Release
- 23e524c12365887cfc60d491f2a99365             3735 main/binary-amd64/Packages
- e0a0371eea48ac8bdcf49971c36d929a             1238 main/binary-amd64/Packages.gz
+ b0711b08c9b75b0401e5e4c9def064ff             1502 Release
+ 9c03e56512a11959d5cfbe41f90c9357             4980 main/binary-amd64/Packages
+ 12b72ebbbb998a891a4985db8c62c758             1454 main/binary-amd64/Packages.gz
 SHA1:
- 4d033557b32d7573e3daaa6ef07f6c424b842b19             1502 Release
- 1c4009c23e1f7173f80e6a07d6579c514a72e8eb             3735 main/binary-amd64/Packages
- 0128ec7e69d1df990bbb4811adc05a27ecc59ff4             1238 main/binary-amd64/Packages.gz
+ 4819fb9bdfe6cec1a26fcf49f8919eee80916c57             1502 Release
+ 31c1a2d12350ab22481c01b03c5c9c643c68ac62             4980 main/binary-amd64/Packages
+ 4599b4f014ae4d7f1d214c1c0f99816488df15a4             1454 main/binary-amd64/Packages.gz
 SHA256:
- 86b372eb00adff13e4fda901cabff0ad6fd2681b81c12a43dad7f960b7e9a65e             1502 Release
- bae1845eebe3059c80570787529824fda3a784e5c6994feedde04022fd6837db             3735 main/binary-amd64/Packages
- d4dea7174e8d391d0166fbcc8ac3d16b5434a10549ad44a0a5296ce469577dfc             1238 main/binary-amd64/Packages.gz
+ 99e16098710a4c050a823b3a8c797b8cabe5c316182d5c1ead84a490ec2cf2b6             1502 Release
+ e84899184d4d6eec4baabf8fd87a12caebe2f25bf8d632bcc5505fdf69b3f397             4980 main/binary-amd64/Packages
+ 0720511a8c053d3a7227288aa8ad48e0849e253f26ffe99357439b8e7d4e5f9e             1454 main/binary-amd64/Packages.gz
 SHA512:
- f26717fe4de925b9175ff92a0286d1a8fc4748d77c61feea04e7f45a51907c97aadd4c5c2c763e62f20b28048ea2432f24714a7795281672d57f30f4547ac28f             1502 Release
- 059456dcccff388a2070e4002e02e198e4cbecf3a6b7054bd05f6007bbdb6c1c5416b182439b742efc6b32794421c8d9b395f45bd843a2eadc861c4d0e95322f             3735 main/binary-amd64/Packages
- db5e21cb6dc38296d2a7cb9c5c4222752bca35d6f10d593c6cb624c4c8e6792e4695e4140fbba0ba08ee9922092075336d1ee21a133a124c000f6bd80f2c5b60             1238 main/binary-amd64/Packages.gz
+ 61a01fec4dcdbfd078e74c9c39b615724030e9bcf804c0ddfd47a17f8082660c68e0b74a8600e1a123472df5a1b41d7e8e85f5ed38dc8fd882307b835240c574             1502 Release
+ c680e9d1d1ff47ee3a7a88e126051aef43dd735df4018299c74bcc5035e720087e0d8c889bdfce9e26b8c0d12f08a345baebbbf2d4d75f8d199b4eb47290a7e4             4980 main/binary-amd64/Packages
+ 5fb8998db73c7c3476d648dd86896bd8e103e5e5aecdcb22d33a684be41374e4ab43322869e1662569b3f2cdc4cb33758d21773422caed21203ce936ab84c064             1454 main/binary-amd64/Packages.gz
