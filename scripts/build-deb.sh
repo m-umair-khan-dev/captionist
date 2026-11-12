@@ -72,7 +72,7 @@ Section: gnome
 Priority: optional
 Architecture: amd64
 Installed-Size: $SIZE
-Depends: libc6 (>= 2.39), libstdc++6, libgtk-4-1 (>= 4.20), libadwaita-1-0 (>= 1.8), pipewire-bin, gnome-shell (>= 51)
+Depends: libc6 (>= 2.39), libstdc++6, libgtk-4-1 (>= 4.20), libadwaita-1-0 (>= 1.8), pipewire-bin, gnome-shell (>= 50)
 Conflicts: hearline
 Replaces: hearline
 Maintainer: m-umair-khan-dev <m-umair-khan-dev@users.noreply.github.com>

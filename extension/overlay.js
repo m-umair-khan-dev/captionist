@@ -18,6 +18,8 @@ const PAD_Y = 10;
 const MARGIN = 24;
 /** Width of the edge zone that resizes instead of moving (px). */
 const EDGE = 10;
+/** Actor names of the docks the caption box keeps clear of (Ubuntu Dock and Dash to Dock). */
+const DOCK_NAMES = ['dashtodockContainer'];
 const MIN_WIDTH = 280;
 const STYLE_KEYS = [
     'font-size', 'lines', 'width-percent', 'text-color',
@@ -80,6 +82,14 @@ export class CaptionOverlay {
         }));
         this._monitorsId = Main.layoutManager.connect('monitors-changed', () => this._relayout());
         this._workareasId = global.display.connect('workareas-changed', () => this._relayout());
+        /** dock actor → its signal ids (see _dockRects). */
+        this._watchedDocks = new Map();
+        this._relayoutId = 0;
+        // A dock may be added after us (extension load order): check again then.
+        this._uiGroupId = Main.layoutManager.uiGroup.connect('child-added', (_g, child) => {
+            if (DOCK_NAMES.includes(child.name))
+                this._queueRelayout();
+        });
         this._setupDrag();
         this._relayout();
     }
@@ -88,6 +98,12 @@ export class CaptionOverlay {
         this._settingIds.forEach(id => this._settings.disconnect(id));
         Main.layoutManager.disconnect(this._monitorsId);
         global.display.disconnect(this._workareasId);
+        Main.layoutManager.uiGroup.disconnect(this._uiGroupId);
+        for (const [dock, ids] of this._watchedDocks)
+            ids.forEach(id => dock.disconnect(id));
+        this._watchedDocks.clear();
+        if (this._relayoutId)
+            GLib.source_remove(this._relayoutId);
         if (this._hideId)
             GLib.source_remove(this._hideId);
         this._grab?.dismiss();
@@ -198,6 +214,65 @@ export class CaptionOverlay {
         return Math.ceil(fontSize * 1.4 * this._scale());
     }
 
+    /**
+     * Screen rectangles of visible docks (Ubuntu Dock / Dash to Dock), or an
+     * empty list on a plain GNOME desktop. Also watches each dock so the box is
+     * re-checked when a dock appears, moves or changes size.
+     */
+    _dockRects() {
+        const docks = Main.layoutManager.uiGroup.get_children()
+            .filter(a => DOCK_NAMES.includes(a.name));
+        for (const dock of docks) {
+            if (this._watchedDocks.has(dock))
+                continue;
+            const ids = ['notify::allocation', 'notify::visible', 'notify::mapped']
+                .map(sig => dock.connect(sig, () => this._queueRelayout()));
+            ids.push(dock.connect('destroy', () => this._watchedDocks.delete(dock)));
+            this._watchedDocks.set(dock, ids);
+        }
+        return docks
+            .filter(d => d.visible && d.mapped)
+            .map(d => {
+                const [x, y] = d.get_transformed_position();
+                const [w, h] = d.get_transformed_size();
+                return {x, y, w, h};
+            })
+            .filter(r => r.w > 0 && r.h > 0);
+    }
+
+    /** Moves the box (x, y, w × h) clear of any dock it overlaps. */
+    _avoidDocks(x, y, w, h, mon, gap) {
+        for (const d of this._dockRects()) {
+            const overlaps = x < d.x + d.w && x + w > d.x && y < d.y + d.h && y + h > d.y;
+            if (!overlaps)
+                continue;
+            const horizontal = d.w >= d.h;
+            if (horizontal && d.y + d.h / 2 > mon.y + mon.height / 2)
+                y = d.y - h - gap;              // dock at the bottom: sit above it
+            else if (horizontal)
+                y = d.y + d.h + gap;            // dock at the top: sit below it
+            else if (d.x + d.w / 2 < mon.x + mon.width / 2)
+                x = d.x + d.w + gap;            // dock on the left: sit right of it
+            else
+                x = d.x - w - gap;              // dock on the right: sit left of it
+        }
+        x = Math.min(Math.max(x, mon.x), mon.x + mon.width - w);
+        y = Math.min(Math.max(y, mon.y), mon.y + mon.height - h);
+        return [Math.round(x), Math.round(y)];
+    }
+
+    /** Re-lays out once on the next idle (docks animate in several steps). */
+    _queueRelayout() {
+        if (this._relayoutId)
+            return;
+        this._relayoutId = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+            this._relayoutId = 0;
+            if (!this._drag && !this._resize)
+                this._relayout();
+            return GLib.SOURCE_REMOVE;
+        });
+    }
+
     _relayout() {
         const s = this._settings;
         const mon = Main.layoutManager.primaryMonitor;
@@ -230,6 +305,9 @@ export class CaptionOverlay {
         // Keep it on screen even if the monitor layout changed.
         x = Math.min(Math.max(x, mon.x), mon.x + mon.width - width);
         y = Math.min(Math.max(y, mon.y), mon.y + mon.height - height);
+        // If a dock covers the box, move the box next to it. The saved
+        // position stays as is, so the box returns if the dock goes away.
+        [x, y] = this._avoidDocks(x, y, width, height, mon, MARGIN * scale);
 
         this._box.set_position(x, y);
         this._box.set_size(width, height);
