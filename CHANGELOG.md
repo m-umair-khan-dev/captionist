@@ -5,6 +5,13 @@ All notable changes to Captionist are listed here. The format follows
 [Semantic Versioning](https://semver.org/). From 0.1.0 on, entries are
 generated from commit messages by release-please (see [CONTRIBUTING.md](CONTRIBUTING.md)).
 
+## [0.1.2](https://github.com/m-umair-khan-dev/captionist/compare/v0.1.1...v0.1.2) (2026-11-12)
+
+
+### Bug Fixes
+
+* keep the caption box clear of the dock & add gnome 50 support ([#12](https://github.com/m-umair-khan-dev/captionist/issues/12)) ([bba939d](https://github.com/m-umair-khan-dev/captionist/commit/bba939dd44dba4109bb567d6d4ee804837d0b7ff))
+
 ## [0.1.1](https://github.com/m-umair-khan-dev/captionist/compare/v0.1.0...v0.1.1) (2026-11-11)
 
 
