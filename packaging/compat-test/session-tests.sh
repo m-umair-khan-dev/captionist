@@ -18,7 +18,7 @@ step "Caption service over D-Bus"
 ping=$(gdbus call $M.Ping 2>&1)
 echo "Ping: $ping"
 [[ "$ping" == *"$(dpkg-query -W -f='${Version}' captionist)"* ]] || fail "service did not answer Ping"
-gdbus call $M.ListModels recommended | grep -q '"rows"' && echo "OK: ListModels" || fail "ListModels"
+gdbus call $M.ListModels recommended | grep -qE 'rows\\?":' && echo "OK: ListModels" || fail "ListModels"
 gdbus call $M.DiagnosticsReport | grep -oE "System: [^\\]*" | head -1
 
 step "Live captions from the speakers"
