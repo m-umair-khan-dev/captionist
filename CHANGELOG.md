@@ -5,6 +5,13 @@ All notable changes to Captionist are listed here. The format follows
 [Semantic Versioning](https://semver.org/). From 0.1.0 on, entries are
 generated from commit messages by release-please (see [CONTRIBUTING.md](CONTRIBUTING.md)).
 
+## [0.1.3](https://github.com/m-umair-khan-dev/captionist/compare/v0.1.2...v0.1.3) (2026-11-12)
+
+
+### Bug Fixes
+
+* support Ubuntu 24.04 LTS (GNOME 46) alongside the latest Ubuntu ([#14](https://github.com/m-umair-khan-dev/captionist/issues/14)) ([6bd141d](https://github.com/m-umair-khan-dev/captionist/commit/6bd141d69f4e1b88bb27d75d8aaef53af1311f28))
+
 ## [0.1.2](https://github.com/m-umair-khan-dev/captionist/compare/v0.1.1...v0.1.2) (2026-11-12)
 
 
