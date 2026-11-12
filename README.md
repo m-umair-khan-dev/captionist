@@ -11,7 +11,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/100%25-offline-2a9d84" alt="100% offline">
-  <img src="https://img.shields.io/badge/GNOME-51-4a86cf?logo=gnome&logoColor=white" alt="GNOME 51">
+  <img src="https://img.shields.io/badge/GNOME-50%20%7C%2051-4a86cf?logo=gnome&logoColor=white" alt="GNOME 50 and 51">
   <img src="https://img.shields.io/badge/made%20with-Rust-b7410e?logo=rust&logoColor=white" alt="Made with Rust">
   <img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="License: GPL-3.0">
 </p>
@@ -66,7 +66,7 @@ Plus what's listed above: sentence correction, custom vocabulary, history and su
 
 ## Install
 
-**Requirements:** GNOME 51 on Wayland (Ubuntu 26.10 or newer), PipeWire, a 64-bit x86 PC with 4+ cores and about 2 GB of free RAM.
+**Requirements:** GNOME 50 or 51 on Wayland (Ubuntu 26.04 or newer), PipeWire, a 64-bit x86 PC with 4+ cores and about 2 GB of free RAM.
 
 1. Download `captionist_<version>_amd64.deb` from the [latest release](https://github.com/m-umair-khan-dev/captionist/releases/latest).
 2. Install it:
