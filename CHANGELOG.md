@@ -5,6 +5,13 @@ All notable changes to Captionist are listed here. The format follows
 [Semantic Versioning](https://semver.org/). From 0.1.0 on, entries are
 generated from commit messages by release-please (see [CONTRIBUTING.md](CONTRIBUTING.md)).
 
+## [0.1.4](https://github.com/m-umair-khan-dev/captionist/compare/v0.1.3...v0.1.4) (2026-11-12)
+
+
+### Bug Fixes
+
+* make NVIDIA GPU acceleration work with CUDA 13 and use the GPU as soon as it passes its test ([#16](https://github.com/m-umair-khan-dev/captionist/issues/16)) ([f079b02](https://github.com/m-umair-khan-dev/captionist/commit/f079b02cf14dc9fe1ac2a8406cc14844de3649a6))
+
 ## [0.1.3](https://github.com/m-umair-khan-dev/captionist/compare/v0.1.2...v0.1.3) (2026-11-12)
 
 
