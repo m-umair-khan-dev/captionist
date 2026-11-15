@@ -39,10 +39,16 @@ struct Controller {
     settings: gio::Settings,
     pipeline: Option<Pipeline>,
     running_key: String,
+    /// Bumped on every stop. Pipeline events carry the generation they were
+    /// started under, so a stopped pipeline's late `Ready`/failure (queued
+    /// while `stop()` waited for its loading thread) can't touch the status
+    /// or a newer pipeline.
+    generation: u64,
 }
 
 impl Controller {
     fn stop(&mut self) {
+        self.generation += 1;
         if let Some(p) = self.pipeline.take() {
             p.stop();
         }
@@ -151,6 +157,7 @@ impl Controller {
             rn.as_deref(),
         );
         let s2 = shared.clone();
+        let generation = self.generation;
         let started = Pipeline::start(cfg, move |ev| match ev {
             Event::Partial { id, text } => s2.emit("Partial", &(id, text)),
             Event::Final {
@@ -164,10 +171,10 @@ impl Controller {
                 }
                 s2.emit("Final", &(id, text));
             }
-            Event::Ready => s2.send(Cmd::Ready),
+            Event::Ready => s2.send(Cmd::Ready(generation)),
             Event::Error(e) => {
                 eprintln!("pipeline: {e}");
-                s2.send(Cmd::PipelineFailed(e));
+                s2.send(Cmd::PipelineFailed(generation, e));
             }
         });
         match started {
@@ -250,7 +257,12 @@ impl Controller {
                 reporting::mark_clean_exit(); // a planned restart, not a crash
                 std::process::exit(75);
             }
-            Cmd::Ready => {
+            Cmd::Ready(g) | Cmd::PipelineFailed(g, _)
+                if g != self.generation || self.pipeline.is_none() =>
+            {
+                // From a pipeline that has since been stopped or replaced.
+            }
+            Cmd::Ready(_) => {
                 let a = self.shared.active.lock().unwrap().clone();
                 let name = |id: &Option<String>| {
                     id.as_ref()
@@ -261,7 +273,7 @@ impl Controller {
                 self.shared
                     .set_status("listening", "", l.as_deref(), r.as_deref());
             }
-            Cmd::PipelineFailed(e) => {
+            Cmd::PipelineFailed(_, e) => {
                 self.shared.reporter.error("pipeline", &e);
                 self.stop();
                 self.shared.set_status("error", &e, None, None);
@@ -276,11 +288,17 @@ impl Controller {
 fn select_runtime(settings: &gio::Settings) {
     use std::os::unix::process::CommandExt;
     let hw = captionist_core::hardware::HardwareReport::probe();
-    let want = Kind::parse(&settings.string("accelerator")).and_then(|k| {
+    let setting = settings.string("accelerator");
+    let want = Kind::parse(&setting).and_then(|k| {
         captionist_core::accel::pack_for(k, &hw)
             .filter(|p| accel::pack_installed(p.id))
             .map(|p| (k, p))
     });
+    if want.is_none() && setting != "cpu" {
+        eprintln!(
+            "accelerator setting {setting:?}, but its runtime isn't installed: staying on the processor"
+        );
+    }
     if want.map(|w| w.0) == accel::active() {
         return;
     }
@@ -353,6 +371,7 @@ fn main() -> Result<()> {
         settings: settings.clone(),
         pipeline: None,
         running_key: String::new(),
+        generation: 0,
     }));
 
     {

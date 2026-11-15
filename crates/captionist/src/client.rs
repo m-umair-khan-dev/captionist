@@ -70,6 +70,18 @@ impl Client {
         });
     }
 
+    /// Calls `f` whenever the service comes (back) onto the bus, e.g. after it
+    /// restarts itself to switch accelerators. Anything fetched from the old
+    /// process may be stale by then, so views reload.
+    pub fn on_reconnect(&self, f: impl Fn() + 'static) {
+        self.proxy
+            .connect_notify_local(Some("g-name-owner"), move |p, _| {
+                if p.name_owner().is_some() {
+                    f();
+                }
+            });
+    }
+
     /// Calls `f(signal_name, parameters)` for every signal from the service.
     pub fn on_signal(&self, f: impl Fn(&str, &glib::Variant) + 'static) {
         self.proxy.connect_local("g-signal", false, move |vals| {
