@@ -24,9 +24,10 @@ pub const IFACE: &str = "io.github.m_umair_khan_dev.Captionist.Daemon1";
 pub enum Cmd {
     /// Settings or installed models changed: start/stop/restart as needed.
     Apply,
-    /// The running pipeline failed; drop it.
-    PipelineFailed(String),
-    Ready,
+    /// A pipeline failed; drop it. Carries the generation it was started under.
+    PipelineFailed(u64, String),
+    /// A pipeline finished loading. Carries the generation it was started under.
+    Ready(u64),
     /// Vocabulary / replacements / profanity filter changed.
     UpdatePost,
     /// Crash-reports setting changed.

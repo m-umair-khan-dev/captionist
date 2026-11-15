@@ -12,3 +12,6 @@ sentry.md
 /sentry.md
 CODE_OF_CONDUCT.md
 *.local.md
+
+# Python bytecode (tests/e2e)
+__pycache__/

@@ -17,6 +17,12 @@ pub fn switch_row(
     row
 }
 
+/// Number row for an integer key.
+///
+/// Built as an `ActionRow` with a `SpinButton` suffix rather than an
+/// `adw::SpinRow`: libadwaita 1.10 leaves `SpinRow` out of the accessibility
+/// tree entirely, so screen readers (and UI tests) can't reach it. The spin
+/// button is labelled by the row's title.
 pub fn spin_row(
     settings: &gio::Settings,
     key: &str,
@@ -25,24 +31,43 @@ pub fn spin_row(
     min: f64,
     max: f64,
     step: f64,
-) -> adw::SpinRow {
-    let row = adw::SpinRow::with_range(min, max, step);
-    row.set_title(title);
-    row.set_subtitle(subtitle);
-    row.set_value(settings.int(key) as f64);
+) -> adw::ActionRow {
+    let row = adw::ActionRow::builder()
+        .title(title)
+        .subtitle(subtitle)
+        .build();
+    let spin = gtk::SpinButton::with_range(min, max, step);
+    spin.set_valign(gtk::Align::Center);
+    spin.set_numeric(true);
+    spin.set_value(settings.int(key) as f64);
+    spin.update_property(&[gtk::accessible::Property::Label(title)]);
+    row.add_suffix(&spin);
+    row.set_activatable_widget(Some(&spin));
+    // A greyed-out row must grey out its number too: otherwise assistive tech
+    // still reports it enabled and can change it.
+    row.bind_property("sensitive", &spin, "sensitive")
+        .sync_create()
+        .build();
+
     let k = key.to_string();
     let s = settings.clone();
-    row.connect_value_notify(move |r| {
-        let v = r.value().round() as i32;
+    spin.connect_value_changed(move |b| {
+        let v = b.value().round() as i32;
+        // GTK still accepts values from assistive tech while greyed out.
+        if !b.is_sensitive() {
+            if s.int(&k) != v {
+                b.set_value(s.int(&k) as f64);
+            }
+            return;
+        }
         if s.int(&k) != v {
             let _ = s.set_int(&k, v);
         }
     });
-    let r2 = row.clone();
     settings.connect_changed(Some(key), move |s, k| {
         let v = s.int(k) as f64;
-        if (r2.value() - v).abs() > 0.1 {
-            r2.set_value(v);
+        if (spin.value() - v).abs() > 0.1 {
+            spin.set_value(v);
         }
     });
     row

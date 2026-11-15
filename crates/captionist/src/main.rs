@@ -296,29 +296,64 @@ fn appearance_page(settings: &gio::Settings) -> adw::PreferencesPage {
     page.add(&g);
 
     let g = adw::PreferencesGroup::builder().title("Colours").build();
+    // (name, text colour, background colour, opacity %)
+    const PRESETS: &[(&str, &str, &str, i32)] = &[
+        ("White on black", "#ffffff", "#000000", 75),
+        ("Yellow on black", "#ffd60a", "#000000", 85),
+        ("High contrast", "#ffffff", "#000000", 100),
+        ("Light", "#1c1c1c", "#f6f5f4", 90),
+    ];
+    let labels: Vec<&str> = std::iter::once("Custom")
+        .chain(PRESETS.iter().map(|p| p.0))
+        .collect();
     let presets = adw::ComboRow::builder()
         .title("Style preset")
-        .model(&gtk::StringList::new(&[
-            "Choose…",
-            "White on black",
-            "Yellow on black",
-            "High contrast",
-            "Light",
-        ]))
+        .model(&gtk::StringList::new(&labels))
         .build();
-    let s = settings.clone();
+    // The row shows the preset matching the current colours, or "Custom", so
+    // it never names a preset after a manual change, and picking that preset
+    // again re-applies it.
+    let matching = |s: &gio::Settings| {
+        let (fg, bg, op) = (
+            s.string("text-color"),
+            s.string("bg-color"),
+            s.int("bg-opacity"),
+        );
+        PRESETS
+            .iter()
+            .position(|p| {
+                p.1.eq_ignore_ascii_case(&fg) && p.2.eq_ignore_ascii_case(&bg) && p.3 == op
+            })
+            .map_or(0, |i| i as u32 + 1)
+    };
+    presets.set_selected(matching(settings));
+    // A delayed Settings object writes all three keys at once, so the row
+    // doesn't see a half-applied preset and flip to "Custom".
+    let writer = gio::Settings::new(APP_ID);
+    writer.delay();
     presets.connect_selected_notify(move |r| {
-        let (fg, bg, op) = match r.selected() {
-            1 => ("#ffffff", "#000000", 75),
-            2 => ("#ffd60a", "#000000", 85),
-            3 => ("#ffffff", "#000000", 100),
-            4 => ("#1c1c1c", "#f6f5f4", 90),
-            _ => return,
+        let Some(&(_, fg, bg, op)) = (r.selected() as usize)
+            .checked_sub(1)
+            .and_then(|i| PRESETS.get(i))
+        else {
+            return;
         };
-        let _ = s.set_string("text-color", fg);
-        let _ = s.set_string("bg-color", bg);
-        let _ = s.set_int("bg-opacity", op);
+        let _ = writer.set_string("text-color", fg);
+        let _ = writer.set_string("bg-color", bg);
+        let _ = writer.set_int("bg-opacity", op);
+        writer.apply();
     });
+    {
+        let presets = presets.clone();
+        settings.connect_changed(None, move |s, key| {
+            if matches!(key, "text-color" | "bg-color" | "bg-opacity") {
+                let i = matching(s);
+                if presets.selected() != i {
+                    presets.set_selected(i);
+                }
+            }
+        });
+    }
     g.add(&presets);
     g.add(&color_row(settings, "text-color", "Text colour"));
     g.add(&color_row(settings, "bg-color", "Background colour"));
@@ -473,16 +508,23 @@ fn build(app: &adw::Application) {
             _ => models.on_signal(name, params),
         });
     }
-    {
-        let c = client.clone();
-        glib::spawn_future_local(async move {
-            if let Ok(s) = c.call_string("Status", None).await {
-                set_status(&s);
-            }
-        });
-    }
-    models.refresh();
-    history.refresh();
+    let reload = {
+        let (c, models, history) = (client.clone(), models.clone(), history.clone());
+        move || {
+            let (c, set_status) = (c.clone(), set_status.clone());
+            glib::spawn_future_local(async move {
+                if let Ok(s) = c.call_string("Status", None).await {
+                    set_status(&s);
+                }
+            });
+            models.refresh();
+            history.refresh();
+        }
+    };
+    reload();
+    // The service restarts itself to switch accelerators; reload once the new
+    // process is up instead of keeping what the old one last reported.
+    client.on_reconnect(reload);
     privacy::ask_once(&settings, &client, &window);
     for page in ["models", "history", "audio", "accuracy", "appearance"] {
         if std::env::args().any(|a| a == format!("--{page}")) {

@@ -40,6 +40,9 @@ pub fn vocabulary_group(settings: &gio::Settings) -> adw::PreferencesGroup {
                     .css_classes(["flat"])
                     .tooltip_text("Remove")
                     .build();
+                del.update_property(&[gtk::accessible::Property::Label(&format!(
+                    "Remove “{word}”"
+                ))]);
                 let s = settings.clone();
                 del.connect_clicked(move |_| {
                     let list: Vec<String> = s
@@ -113,6 +116,10 @@ pub fn replacements_group(settings: &gio::Settings) -> adw::PreferencesGroup {
         .valign(gtk::Align::Center)
         .tooltip_text("Add")
         .build();
+    // Placeholders aren't accessible names: label the fields for screen readers.
+    heard.update_property(&[gtk::accessible::Property::Label("Heard")]);
+    write.update_property(&[gtk::accessible::Property::Label("Write instead")]);
+    add.update_property(&[gtk::accessible::Property::Label("Add replacement")]);
     let bx = gtk::Box::new(gtk::Orientation::Horizontal, 8);
     bx.set_margin_top(6);
     bx.set_margin_bottom(6);
@@ -170,6 +177,9 @@ pub fn replacements_group(settings: &gio::Settings) -> adw::PreferencesGroup {
                     .css_classes(["flat"])
                     .tooltip_text("Remove")
                     .build();
+                del.update_property(&[gtk::accessible::Property::Label(&format!(
+                    "Remove “{from}” → “{to}”"
+                ))]);
                 let s = settings.clone();
                 del.connect_clicked(move |_| {
                     let mut map = replacements(&s);

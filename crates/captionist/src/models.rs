@@ -7,7 +7,7 @@ use captionist_core::accel::{Advice, Kind};
 use captionist_core::catalog::Role;
 use captionist_core::listing::{Fit, ModelRow, ModelsReport, SpeedSource};
 use gtk::{gio, glib};
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
 use std::rc::Rc;
 
@@ -26,6 +26,11 @@ pub struct ModelsPage {
     /// Download progress labels by model id.
     progress: RefCell<HashMap<String, gtk::Label>>,
     last: RefCell<Option<ModelsReport>>,
+    /// What the rows were last built from, to skip rebuilding when nothing changed.
+    built_from: RefCell<String>,
+    /// A refresh is in flight / another was asked for meanwhile.
+    refreshing: Cell<bool>,
+    refresh_again: Cell<bool>,
 }
 
 const SORTS: &[(&str, &str)] = &[
@@ -36,6 +41,29 @@ const SORTS: &[(&str, &str)] = &[
     ("memory", "Least memory"),
 ];
 const MODES: &[(&str, &str)] = &[("auto", "Automatic (recommended)"), ("manual", "Manual")];
+
+/// A button's label, or its tooltip for icon-only buttons.
+fn button_name(b: &gtk::Button) -> Option<String> {
+    b.label()
+        .or_else(|| b.tooltip_text())
+        .map(|s| s.to_string())
+}
+
+fn find_button(w: &gtk::Widget, name: &str) -> Option<gtk::Button> {
+    let mut child = w.first_child();
+    while let Some(c) = child {
+        if let Some(b) = c.downcast_ref::<gtk::Button>()
+            && button_name(b).as_deref() == Some(name)
+        {
+            return Some(b.clone());
+        }
+        if let Some(b) = find_button(&c, name) {
+            return Some(b);
+        }
+        child = c.next_sibling();
+    }
+    None
+}
 
 fn mb(v: u64) -> String {
     if v >= 1024 {
@@ -128,6 +156,9 @@ impl ModelsPage {
             dynamic: RefCell::new(vec![]),
             progress: RefCell::new(HashMap::new()),
             last: RefCell::new(None),
+            built_from: RefCell::default(),
+            refreshing: Cell::new(false),
+            refresh_again: Cell::new(false),
         });
 
         let m = me.clone();
@@ -168,7 +199,14 @@ impl ModelsPage {
         }
     }
 
+    /// Reloads the list. Rebuilding replaces every row (and whatever is under
+    /// the pointer or keyboard focus), so bursts of change signals are
+    /// coalesced into one request, and an unchanged report rebuilds nothing.
     pub fn refresh(self: &Rc<Self>) {
+        if self.refreshing.replace(true) {
+            self.refresh_again.set(true);
+            return;
+        }
         let me = self.clone();
         let sort = self.settings.string("model-sort").to_string();
         glib::spawn_future_local(async move {
@@ -177,13 +215,59 @@ impl ModelsPage {
                 .call_string("ListModels", Some((sort,).to_variant()))
                 .await
             {
-                Ok(json) => match serde_json::from_str::<ModelsReport>(&json) {
-                    Ok(r) => me.rebuild(r),
-                    Err(e) => me.error(&format!("Unexpected reply from the caption service: {e}")),
-                },
+                Ok(json) => {
+                    // The rows also depend on the mode ("Use recommended").
+                    let key = format!("{}\n{json}", me.settings.string("model-mode"));
+                    if *me.built_from.borrow() != key {
+                        match serde_json::from_str::<ModelsReport>(&json) {
+                            Ok(r) => {
+                                *me.built_from.borrow_mut() = key;
+                                me.rebuild(r);
+                            }
+                            Err(e) => {
+                                me.error(&format!("Unexpected reply from the caption service: {e}"))
+                            }
+                        }
+                    }
+                }
                 Err(e) => me.error(&format!("Caption service not reachable: {}", e.message())),
             }
+            me.refreshing.set(false);
+            if me.refresh_again.replace(false) {
+                me.refresh();
+            }
         });
+    }
+
+    /// The dynamic row holding keyboard focus, and the focused button's name.
+    fn focused_row(&self) -> Option<(String, Option<String>)> {
+        let focus = self.page.root()?.focus()?;
+        let dynamic = self.dynamic.borrow();
+        let row = dynamic
+            .iter()
+            .map(|(_, w)| w)
+            .find(|w| focus == **w || focus.is_ancestor(*w))?;
+        let title = row
+            .downcast_ref::<adw::PreferencesRow>()?
+            .title()
+            .to_string();
+        let button = focus.downcast_ref::<gtk::Button>().and_then(button_name);
+        Some((title, button))
+    }
+
+    /// Puts focus back on the same button (or row) after a rebuild.
+    fn restore_focus(&self, (title, button): (String, Option<String>)) {
+        let dynamic = self.dynamic.borrow();
+        let Some(row) = dynamic.iter().map(|(_, w)| w).find(|w| {
+            w.downcast_ref::<adw::PreferencesRow>()
+                .is_some_and(|r| r.title() == title)
+        }) else {
+            return;
+        };
+        let target = button
+            .and_then(|name| find_button(row, &name))
+            .map(|b| b.upcast::<gtk::Widget>());
+        target.unwrap_or_else(|| row.clone()).grab_focus();
     }
 
     fn add(&self, group: &adw::PreferencesGroup, w: &impl IsA<gtk::Widget>) {
@@ -194,6 +278,14 @@ impl ModelsPage {
     }
 
     fn rebuild(self: &Rc<Self>, r: ModelsReport) {
+        let focus = self.focused_row();
+        self.build_rows(r);
+        if let Some(f) = focus {
+            self.restore_focus(f);
+        }
+    }
+
+    fn build_rows(self: &Rc<Self>, r: ModelsReport) {
         for (g, w) in self.dynamic.borrow_mut().drain(..) {
             g.remove(&w);
         }
@@ -453,16 +545,20 @@ impl ModelsPage {
                     }
                     b.connect_clicked(set(kind.id()));
                     row.add_suffix(&b);
-                    if let Some((id, _, _)) = &o.pack {
+                    if let Some((id, name, size)) = &o.pack {
                         let del = gtk::Button::builder()
                             .icon_name("user-trash-symbolic")
                             .valign(gtk::Align::Center)
                             .css_classes(["flat"])
                             .tooltip_text("Remove the runtime pack")
                             .build();
-                        let (me, id) = (self.clone(), id.clone());
-                        del.connect_clicked(move |_| {
-                            me.call("RemoveAccelerator", Some((id.clone(),).to_variant()))
+                        let (me, id, name, size) =
+                            (self.clone(), id.clone(), name.clone(), *size as u64);
+                        del.connect_clicked(move |b| {
+                            let (me2, id) = (me.clone(), id.clone());
+                            me.confirm_delete(b, &format!("Remove the {name}?"), size, move || {
+                                me2.call("RemoveAccelerator", Some((id.clone(),).to_variant()))
+                            });
                         });
                         row.add_suffix(&del);
                     }
@@ -626,14 +722,49 @@ impl ModelsPage {
                     .css_classes(["flat"])
                     .tooltip_text("Delete this model")
                     .build();
-                let (me, id) = (self.clone(), r.id.clone());
-                del.connect_clicked(move |_| {
-                    me.call("DeleteModel", Some((id.clone(),).to_variant()))
+                let (me, id, name, size) = (
+                    self.clone(),
+                    r.id.clone(),
+                    r.name.clone(),
+                    r.download_mb as u64,
+                );
+                del.connect_clicked(move |b| {
+                    let (me2, id) = (me.clone(), id.clone());
+                    me.confirm_delete(b, &format!("Delete {name}?"), size, move || {
+                        me2.call("DeleteModel", Some((id.clone(),).to_variant()))
+                    });
                 });
                 row.add_suffix(&del);
             }
         }
         row
+    }
+
+    /// Asks before deleting something that has to be downloaded again.
+    fn confirm_delete(
+        &self,
+        anchor: &gtk::Button,
+        heading: &str,
+        download_mb: u64,
+        delete: impl Fn() + 'static,
+    ) {
+        let dialog = adw::AlertDialog::builder()
+            .heading(heading)
+            .body(format!(
+                "It's removed from this computer. Using it again means downloading it again ({}).",
+                mb(download_mb)
+            ))
+            .build();
+        dialog.add_responses(&[("cancel", "Cancel"), ("delete", "Delete")]);
+        dialog.set_response_appearance("delete", adw::ResponseAppearance::Destructive);
+        dialog.set_default_response(Some("cancel"));
+        dialog.set_close_response("cancel");
+        dialog.connect_response(None, move |_, resp| {
+            if resp == "delete" {
+                delete();
+            }
+        });
+        dialog.present(anchor.root().as_ref());
     }
 
     /// Switch to manual mode with this model; asks first if it may lag or is too slow.

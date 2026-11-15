@@ -10,8 +10,9 @@ import * as Slider from 'resource:///org/gnome/shell/ui/slider.js';
 
 const TEXT_COLORS = [['#ffffff', 'White'], ['#ffd60a', 'Yellow'], ['#8ff0a4', 'Green'], ['#99c1f1', 'Blue'], ['#1c1c1c', 'Black']];
 const BG_COLORS = [['#000000', 'Black'], ['#241f31', 'Dark'], ['#1a3a6b', 'Navy'], ['#f6f5f4', 'Light']];
-const FONT_MIN = 14;
-const FONT_MAX = 48;
+// Same range as the font-size key in the schema (and the Settings window).
+const FONT_MIN = 12;
+const FONT_MAX = 72;
 
 function iconButton(iconName, accessibleName) {
     return new St.Button({
@@ -141,15 +142,23 @@ export class CaptionControls {
 
     _slider(key, toFraction, fromFraction) {
         const s = new Slider.Slider(toFraction(this._settings.get_int(key)));
+        // Moving the slider to follow a settings change must not write back:
+        // the slider clamps to its range, which would overwrite the value.
+        let syncing = false;
         s.connect('notify::value', () => {
+            if (syncing)
+                return;
             const v = fromFraction(s.value);
             if (this._settings.get_int(key) !== v)
                 this._settings.set_int(key, v);
         });
         this._ids.push([this._settings, this._settings.connect(`changed::${key}`, () => {
             const f = toFraction(this._settings.get_int(key));
-            if (Math.abs(s.value - f) > 0.01)
+            if (Math.abs(s.value - f) > 0.01) {
+                syncing = true;
                 s.value = f;
+                syncing = false;
+            }
         })]);
         return s;
     }
