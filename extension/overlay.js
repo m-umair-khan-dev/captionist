@@ -100,6 +100,12 @@ export class CaptionOverlay {
         }));
         this._monitorsId = Main.layoutManager.connect('monitors-changed', () => this._relayout());
         this._workareasId = global.display.connect('workareas-changed', () => this._relayout());
+        // When a window goes fullscreen on Wayland the compositor can re-stack
+        // layers and cover Shell chrome. Raise the box to the top of uiGroup so
+        // it stays visible over fullscreen windows (e.g. YouTube in Chrome).
+        this._fullscreenId = global.display.connect('in-fullscreen-changed', () => {
+            Main.layoutManager.uiGroup.set_child_above_sibling(this._box, null);
+        });
         /** dock actor → its signal ids (see _dockRects). */
         this._watchedDocks = new Map();
         this._relayoutId = 0;
@@ -116,6 +122,7 @@ export class CaptionOverlay {
         this._settingIds.forEach(id => this._settings.disconnect(id));
         Main.layoutManager.disconnect(this._monitorsId);
         global.display.disconnect(this._workareasId);
+        global.display.disconnect(this._fullscreenId);
         Main.layoutManager.uiGroup.disconnect(this._uiGroupId);
         for (const [dock, ids] of this._watchedDocks)
             ids.forEach(id => dock.disconnect(id));
