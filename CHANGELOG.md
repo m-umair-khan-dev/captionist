@@ -5,6 +5,14 @@ All notable changes to Captionist are listed here. The format follows
 [Semantic Versioning](https://semver.org/). From 0.1.0 on, entries are
 generated from commit messages by release-please (see [CONTRIBUTING.md](CONTRIBUTING.md)).
 
+## [1.0.1](https://github.com/m-umair-khan-dev/captionist/compare/v1.0.0...v1.0.1) (2026-11-23)
+
+
+### Bug Fixes
+
+* keep caption overlay visible over fullscreen windows on Wayland ([#21](https://github.com/m-umair-khan-dev/captionist/issues/21)) ([3887b65](https://github.com/m-umair-khan-dev/captionist/commit/3887b65d77461c2ea77e41909d0aed94f7ec59e0))
+* update url to 2.5.9 for RUSTSEC-2026-0592 ([#24](https://github.com/m-umair-khan-dev/captionist/issues/24)) ([e2a6f01](https://github.com/m-umair-khan-dev/captionist/commit/e2a6f016442eff7832bae1c24944fce8bea4c099))
+
 ## [1.0.0](https://github.com/m-umair-khan-dev/captionist/compare/v0.1.4...v1.0.0) (2026-11-15)
 
 
